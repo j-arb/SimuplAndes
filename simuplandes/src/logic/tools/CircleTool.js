@@ -8,12 +8,11 @@ class CircleTool {
     }
 
     handleClick(e) {
-        console.log(this.state);
-        if (this.state == "initial") {
+        if (this.state === "initial") {
             const center = [e.evt.clientX, e.evt.clientY];
             this.circle.center = center;
             this.state = "centerDefined";
-        } else if (this.state == "centerDefined") {
+        } else if (this.state === "centerDefined") {
             this.state = "done";
             const x1 = this.circle.center[0]
             const y1 = this.circle.center[1]
@@ -25,7 +24,7 @@ class CircleTool {
     }
 
     handleMouseMove(e) {
-        if (this.state == "centerDefined") {
+        if (this.state === "centerDefined") {
             const x1 = this.circle.center[0]
             const y1 = this.circle.center[1]
             const x2 = e.evt.clientX;

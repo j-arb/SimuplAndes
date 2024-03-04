@@ -8,12 +8,11 @@ class RectTool {
     }
 
     handleClick(e) {
-        console.log(this.state);
-        if (this.state == "initial") {
+        if (this.state === "initial") {
             const origin = [e.evt.clientX, e.evt.clientY];
             this.body.origin = origin;
             this.state = "centerDefined";
-        } else if (this.state == "centerDefined") {
+        } else if (this.state === "centerDefined") {
             this.state = "done";
             const x1 = this.body.origin[0]
             const y1 = this.body.origin[1]
@@ -25,7 +24,7 @@ class RectTool {
     }
 
     handleMouseMove(e) {
-        if (this.state == "centerDefined") {
+        if (this.state === "centerDefined") {
             const x1 = this.body.origin[0]
             const y1 = this.body.origin[1]
             const x2 = e.evt.clientX;
