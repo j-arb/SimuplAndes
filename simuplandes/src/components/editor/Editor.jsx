@@ -1,82 +1,95 @@
-import { useEffect, useRef } from 'react'
-import { Engine, Render, Bodies, World } from 'matter-js'
+import { useEffect, useRef, useState } from "react";
+import { Stage, Layer, Rect, Circle, Text } from "react-konva"
+import CircleProps from "../../logic/Bodies/CircleProps";
+import CircleTool from "../../logic/tools/CircleTool";
+import RectTool from "../../logic/tools/RectTool";
 
 function Editor (props) {
-  const scene = useRef()
-  const isPressed = useRef(false)
-  const engine = useRef(Engine.create())
+  const [bodies, setBodies] = useState([]);
+  const tool = useRef(null);
+  const [labelText, setLabelText] = useState("")
 
   useEffect(() => {
-    const cw = document.body.clientWidth
-    const ch = document.body.clientHeight
-
-    const render = Render.create({
-      element: scene.current,
-      engine: engine.current,
-      options: {
-        width: cw,
-        height: ch,
-        wireframes: false,
-        background: 'transparent'
-      }
-    })
-
-    World.add(engine.current.world, [
-      Bodies.rectangle(cw / 2, -10, cw, 20, { isStatic: true }),
-      Bodies.rectangle(-10, ch / 2, 20, ch, { isStatic: true }),
-      Bodies.rectangle(cw / 2, ch + 10, cw, 20, { isStatic: true }),
-      Bodies.rectangle(cw + 10, ch / 2, 20, ch, { isStatic: true })
-    ])
-
-    Engine.run(engine.current)
-    Render.run(render)
-
-    return () => {
-      Render.stop(render)
-      World.clear(engine.current.world)
-      Engine.clear(engine.current)
-      render.canvas.remove()
-      render.canvas = null
-      render.context = null
-      render.textures = {}
+    if (tool.current == null) {
+      setTool("none");
     }
-  }, [])
+  }, [bodies])
 
-  const handleDown = () => {
-    isPressed.current = true
+  const onMouseDown = (e) => {
+    if(tool.current) {
+      tool.current.handleClick(e);
+      const bod = tool.current.getBody()
+      let bodies2 = [...bodies];
+      bodies2[bod.id] = bod;
+      setBodies(bodies2);
+      setLabelText(tool.current.getLabelText())
+      if(tool.current.isDone()) {
+        setTool("none");
+      }
+    }
   }
 
-  const handleUp = () => {
-    isPressed.current = false
+  const onMouseMove = (e) => {
+    if (tool.current) {
+      tool.current.handleMouseMove(e);
+      if(tool.current.getBody()) {
+        const bod = tool.current.getBody();
+        let bodies2 = [...bodies];
+        bodies2[bod.id] = bod;
+        setBodies(bodies2);
+      }
+    }
   }
 
-  const handleAddCircle = e => {
-    if (isPressed.current) {
-      const ball = Bodies.circle(
-        e.clientX,
-        e.clientY,
-        10 + Math.random() * 30,
-        {
-          mass: 10,
-          restitution: 0.9,
-          friction: 0.005,
-          render: {
-            fillStyle: '#0000ff'
-          }
-        })
-      World.add(engine.current.world, [ball])
+  const onKeyDownHanlder = (e) => {
+    if (e.key === "c") {
+      setTool("circle")
+    } else if (e.key === "r") {
+      setTool("rect")
+    }
+  }
+
+  const setTool = (type) => {
+    if (type === "circle") {
+      tool.current = new CircleTool(bodies.length);
+      console.log(tool.current.state);
+      setBodies([...bodies, tool.current.getBody()]);
+      setLabelText(tool.current.getLabelText());
+    } else if(type === "rect") {
+      tool.current = new RectTool(bodies.length);
+      setBodies([...bodies, tool.current.getBody()]);
+      setLabelText(tool.current.getLabelText());
+    } else if(type === "none") {
+      tool.current = null;
+      setLabelText("Presione 'c' para circulos y 'r' para rectangulos")
     }
   }
 
   return (
-    <div
-      onMouseDown={handleDown}
-      onMouseUp={handleUp}
-      onMouseMove={handleAddCircle}
-    >
-      <div ref={scene} style={{ width: '100%', height: '100%' }} />
+    // Stage - is a div wrapper
+    // Layer - is an actual 2d canvas element, so you can have several layers inside the stage
+    // Rect and Circle are not DOM elements. They are 2d shapes on canvas
+    <div onKeyDown={onKeyDownHanlder} tabIndex="0">
+      <Stage width={window.innerWidth} height={window.innerHeight}
+      onMouseDown={onMouseDown}
+      onMouseMove={onMouseMove}>
+        <Layer>
+          <Text text={labelText} />
+          {bodies.map((body) => {
+            if (body.getType() === "circle") {
+              return (
+                <Circle x={body.center[0]} y={body.center[1]} radius={body.radius} stroke="black" />
+              )
+            } else if(body.getType() === "rect") {
+              return (
+                <Rect x={body.origin[0]} y={body.origin[1]} width={body.width} height={body.height} stroke="black" />
+              )
+            }
+          })}
+        </Layer>
+      </Stage>
     </div>
-  )
+  );
 }
 
 export default Editor
