@@ -8,6 +8,16 @@ class CircleProps {
         this.radius = radius;
         this.color = "green";
         this.stroke = "black";
+        this.isStatic = false;
+        this.anchors = []
+    }
+
+    addAnchor(anchor) {
+        this.anchors.push(anchor);
+    }
+
+    getAnchors() {
+        return this.anchors;
     }
 
     getId() {
@@ -26,15 +36,23 @@ class CircleProps {
         return "circle";
     }
 
-    getKonvaComponent() {
+    getKonvaComponent(onBodyClick, onAnchorClick) {
         return (
-            <Circle
-                x={this.center[0]}
-                y={this.center[1]}
-                radius={this.radius}
-                fill={this.color}
-                stroke={this.stroke}
-            />
+            <>
+                <Circle
+                    x={this.center[0]}
+                    y={this.center[1]}
+                    radius={this.radius}
+                    fill={this.color}
+                    stroke={this.stroke}
+                    onClick={() => {onBodyClick(this);}}
+                />
+                {
+                    this.anchors.map((anchor) => {
+                        return anchor.getKonvaComponent(onAnchorClick);
+                    })
+                }
+            </>
         )
     }
 
@@ -49,7 +67,8 @@ class CircleProps {
                 friction: 0.005,
                 render: {
                     fillStyle: this.color
-                }
+                },
+                isStatic: this.isStatic
         });
 
         return ball

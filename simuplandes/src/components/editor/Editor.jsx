@@ -4,6 +4,8 @@ import CircleTool from "../../logic/tools/CircleTool";
 import RectTool from "../../logic/tools/RectTool";
 import PolyTool from "../../logic/tools/PolyTool";
 import { useNavigate } from "react-router";
+import FixBodyTool from "../../logic/tools/FixBodyTool";
+import AnchorTool from "../../logic/tools/AnchorTool";
 
 function Editor (props) {
   const [bodies, setBodies] = useState([]);
@@ -19,60 +21,88 @@ function Editor (props) {
 
   const onMouseDown = (e) => {
     if(tool.current) {
-      tool.current.handleClick(e);
-      const bod = tool.current.getBody()
-      let bodies2 = [...bodies];
-      bodies2[bod.id] = bod;
-      setBodies(bodies2);
-      setLabelText(tool.current.getLabelText())
-      if(tool.current.isDone()) {
-        setTool("none");
+      if(tool.current.handleClick) {
+        tool.current.handleClick(e);
+        
+        if(tool.current.isDone()) {
+          setTool("none");
+        }
       }
     }
   }
 
   const onMouseMove = (e) => {
     if (tool.current) {
-      tool.current.handleMouseMove(e);
-      if(tool.current.getBody()) {
-        const bod = tool.current.getBody();
-        let bodies2 = [...bodies];
-        bodies2[bod.id] = bod;
-        setBodies(bodies2);
+      if(tool.current.handleMouseMove) {
+        tool.current.handleMouseMove(e);
       }
     }
   }
 
+  const onBodyClick = (body) => {
+    if (tool.current && tool.current.handleBodyClick) {
+      tool.current.handleBodyClick(body);
+
+      if(tool.current.isDone()) {
+        setTool("none");
+      }
+    }
+  }
+
+  const onAnchorClick = (anchor) => {
+    if (tool.current && tool.current.handleAnchorClick) {
+      tool.current.handleAnchorClick(anchor);
+    }
+  }
+
+  const updateBody = (body) => {
+    const bodies2 = [...bodies];
+    bodies2[body.id] = body;
+    setBodies(bodies2); 
+  }
+
+
   const onKeyDownHanlder = (e) => {
-    if (e.key === "c") {
+    if (e.key === "1") {
       setTool("circle")
-    } else if (e.key === "r") {
+    } else if (e.key === "2") {
       setTool("rect")
-    } else if(e.key === "p") {
+    } else if(e.key === "3") {
       setTool("poly")
-    } else if(e.key === " ") {
+    } else if(e.key === "4") {
+      setTool("fix body");
+    } else if(e.key === "5") {
+      setTool("anchor");
+    }else if(e.key === " ") {
       props.setWorldBodies([...bodies]);
       navigate("/player");
     }
   }
 
+
   const setTool = (type) => {
     if (type === "circle") {
-      tool.current = new CircleTool(bodies.length);
+      tool.current = new CircleTool(bodies.length, updateBody, setLabelText);
       setBodies([...bodies, tool.current.getBody()]);
       setLabelText(tool.current.getLabelText());
     } else if(type === "rect") {
-      tool.current = new RectTool(bodies.length);
+      tool.current = new RectTool(bodies.length, updateBody, setLabelText);
       setBodies([...bodies, tool.current.getBody()]);
       setLabelText(tool.current.getLabelText());
     }
     else if(type === "poly") {
-      tool.current = new PolyTool(bodies.length);
+      tool.current = new PolyTool(bodies.length, updateBody, setLabelText);
       setBodies([...bodies, tool.current.getBody()]);
+      setLabelText(tool.current.getLabelText());
+    } else if(type === "fix body") {
+      tool.current = new FixBodyTool();
+      setLabelText(tool.current.getLabelText());
+    } else if(type === "anchor") {
+      tool.current = new AnchorTool(updateBody, setLabelText);
       setLabelText(tool.current.getLabelText());
     } else if(type === "none") {
       tool.current = null;
-      setLabelText("Presione 'c' para circulos, 'r' para rectangulos y 'p' para polígonos")
+      setLabelText("1: circulos, 2: rectangulos, 3: poligonos, 4: fijar / liberar cuerpo, 5: añadir una fijación");
     }
   }
 
@@ -87,7 +117,7 @@ function Editor (props) {
         <Layer>
           <Text text={labelText} />
           {bodies.map((body) => {
-            return body.getKonvaComponent()
+            return body.getKonvaComponent(onBodyClick)
           })}
         </Layer>
       </Stage>

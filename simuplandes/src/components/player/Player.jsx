@@ -9,8 +9,6 @@ export default function Player (props) {
   useEffect(() => {
     const cw = document.body.clientWidth;
     const ch = document.body.clientHeight;
-    console.log(cw)
-    console.log(ch)
 
     const render = Render.create({
       element: scene.current,
@@ -71,7 +69,6 @@ export default function Player (props) {
   }
 
   const handlePress = (e) => {
-    console.log(e);
     if(e.key === "p") {
       if (runner.current.enabled) {
         runner.current.enabled = false
