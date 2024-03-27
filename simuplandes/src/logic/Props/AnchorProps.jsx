@@ -13,26 +13,34 @@ class AnchorProps {
     }
 
     setPosition(x, y) {
-        this.position.x = x;
-        this.position.y = y;
+        this.position.x = x - this.body.getCenter().x;
+        this.position.y = y - this.body.getCenter().y;
     }
 
     getBody() {
         return this.body;
     }
 
-    getPosition() {
+    getRelativePosition() {
         return this.position;
     }
 
+    getAbsolutePosition() {
+        const x = this.position.x + this.body.getCenter().x;
+        const y = this.position.y + this.body.getCenter().y;
+        return {x: x, y: y};
+    }
+
     getKonvaComponent(onAnchorClick) {
+        const absPos = this.getAbsolutePosition();
         return (
             <Circle
-                x={this.position.x}
-                y={this.position.y}
+                x={absPos.x}
+                y={absPos.y}
                 radius={5}
                 fill="white"
                 stroke="gray"
+                onClick={() => {onAnchorClick(this)}}
             />
         );
     }

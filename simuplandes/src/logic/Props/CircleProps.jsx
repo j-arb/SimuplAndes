@@ -9,7 +9,8 @@ class CircleProps {
         this.color = "green";
         this.stroke = "black";
         this.isStatic = false;
-        this.anchors = []
+        this.anchors = [];
+        this.matterJsBody = null;
     }
 
     addAnchor(anchor) {
@@ -25,7 +26,7 @@ class CircleProps {
     }
 
     getCenter() {
-        return this.center;
+        return {x: this.center[0], y: this.center[1]};
     }
 
     getRadius() {
@@ -34,6 +35,11 @@ class CircleProps {
 
     getType() {
         return "circle";
+    }
+
+    relativeMove(x, y) {
+        this.center[0] += x;
+        this.center[1] += y;
     }
 
     getKonvaComponent(onBodyClick, onAnchorClick) {
@@ -56,22 +62,29 @@ class CircleProps {
         )
     }
 
-    getMatterJsBody() {
-        const ball = Bodies.circle(
-            this.center[0],
-            this.center[1],
-            this.radius,
-            {
-                mass: 10,
-                restitution: 0.9,
-                friction: 0.005,
-                render: {
-                    fillStyle: this.color
-                },
-                isStatic: this.isStatic
-        });
+    resetMatterJsBody() {
+        this.matterJsBody = null;
+    }
 
-        return ball
+    
+    getMatterJsBody() {
+        if (!this.matterJsBody) {
+            this.matterJsBody = Bodies.circle(
+                this.center[0],
+                this.center[1],
+                this.radius,
+                {
+                    mass: 10,
+                    restitution: 0.9,
+                    friction: 0.005,
+                    render: {
+                        fillStyle: this.color
+                    },
+                    isStatic: this.isStatic
+            });
+        }
+
+        return this.matterJsBody;
     }
 }
 

@@ -6,17 +6,24 @@ import PolyTool from "../../logic/tools/PolyTool";
 import { useNavigate } from "react-router";
 import FixBodyTool from "../../logic/tools/FixBodyTool";
 import AnchorTool from "../../logic/tools/AnchorTool";
+import RotConstraintTool from "../../logic/tools/RotConstraintTool";
+import ConstraintProps from "../../logic/Props/ConstraintProps";
 
 function Editor (props) {
-  const [bodies, setBodies] = useState([]);
+  const [bodies, setBodies] = useState(props.worldBodies);
+  const [constraints, setConstraints] = useState(props.worldConstraints);
   const tool = useRef(null);
   const [labelText, setLabelText] = useState("")
   const navigate = useNavigate();
+  const [popUp, setPopUp] = useState(null);
+  const mainDiv = useRef();
 
   useEffect(() => {
     if (tool.current == null) {
       setTool("none");
     }
+
+    mainDiv.current.focus();
   }, [bodies]);
 
   const onMouseDown = (e) => {
@@ -52,6 +59,10 @@ function Editor (props) {
   const onAnchorClick = (anchor) => {
     if (tool.current && tool.current.handleAnchorClick) {
       tool.current.handleAnchorClick(anchor);
+
+      if(tool.current.isDone()) {
+        setTool("none");
+      }
     }
   }
 
@@ -61,6 +72,15 @@ function Editor (props) {
     setBodies(bodies2); 
   }
 
+  /**
+   * 
+   * @param {ConstraintProps} constraint 
+   */
+  const updateConstraint = (constraint)  => {
+    const constraints2 = {...constraints};
+    constraints2[constraint.id] = constraint;
+    setConstraints(constraints2);
+  }
 
   const onKeyDownHanlder = (e) => {
     if (e.key === "1") {
@@ -73,12 +93,16 @@ function Editor (props) {
       setTool("fix body");
     } else if(e.key === "5") {
       setTool("anchor");
-    }else if(e.key === " ") {
-      props.setWorldBodies([...bodies]);
+    } else if(e.key === "6") {
+      setTool("constraint");
+    } else if(e.key === "p") {
       navigate("/player");
+      const constraints2 = {...constraints};
+      const bodies2 = [...bodies];
+      props.setWorldConstraints(constraints2);
+      props.setWorldBodies(bodies2);
     }
   }
-
 
   const setTool = (type) => {
     if (type === "circle") {
@@ -89,8 +113,7 @@ function Editor (props) {
       tool.current = new RectTool(bodies.length, updateBody, setLabelText);
       setBodies([...bodies, tool.current.getBody()]);
       setLabelText(tool.current.getLabelText());
-    }
-    else if(type === "poly") {
+    } else if(type === "poly") {
       tool.current = new PolyTool(bodies.length, updateBody, setLabelText);
       setBodies([...bodies, tool.current.getBody()]);
       setLabelText(tool.current.getLabelText());
@@ -100,9 +123,15 @@ function Editor (props) {
     } else if(type === "anchor") {
       tool.current = new AnchorTool(updateBody, setLabelText);
       setLabelText(tool.current.getLabelText());
+    } else if(type === "constraint") {
+      tool.current = new RotConstraintTool(updateConstraint, setLabelText);
+      setLabelText(tool.current.getLabelText());
     } else if(type === "none") {
       tool.current = null;
-      setLabelText("1: circulos, 2: rectangulos, 3: poligonos, 4: fijar / liberar cuerpo, 5: añadir una fijación");
+      setLabelText(
+        "1: circulos, 2: rectangulos, 3: poligonos, 4: fijar / liberar cuerpo, " + 
+          "5: punto de aclaje, 6: restricción rotacional, p: iniciar simulación"
+      );
     }
   }
 
@@ -110,14 +139,15 @@ function Editor (props) {
     // Stage - is a div wrapper
     // Layer - is an actual 2d canvas element, so you can have several layers inside the stage
     // Rect and Circle are not DOM elements. They are 2d shapes on canvas
-    <div onKeyDown={onKeyDownHanlder} tabIndex="0">
+    <div onKeyDown={onKeyDownHanlder} tabIndex="0" ref={mainDiv}>
+      { popUp ? popUp : <></> }
       <Stage width={window.innerWidth} height={window.innerHeight}
       onMouseDown={onMouseDown}
       onMouseMove={onMouseMove}>
         <Layer>
           <Text text={labelText} />
           {bodies.map((body) => {
-            return body.getKonvaComponent(onBodyClick)
+            return body.getKonvaComponent(onBodyClick, onAnchorClick)
           })}
         </Layer>
       </Stage>

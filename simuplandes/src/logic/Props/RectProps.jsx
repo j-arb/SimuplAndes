@@ -10,7 +10,13 @@ class RectProps {
         this.color = "red";
         this.stroke = "black";
         this.isStatic = false;
-        this.anchors = []
+        this.anchors = [];
+        this.matterJsBody = null;
+    }
+
+    relativeMove(x, y) {
+        this.origin[0] += x;
+        this.origin[1] += y;
     }
 
     addAnchor(anchor) {
@@ -44,7 +50,7 @@ class RectProps {
     getCenter() {
         const x = this.origin[0] + (this.width / 2);
         const y = this.origin[1] + (this.height / 2);
-        return [x, y];
+        return {x: x, y: y};
     }
 
     getKonvaComponent(onBodyClick, onAnchorClick) {
@@ -68,25 +74,31 @@ class RectProps {
         )
     }
 
-    getMatterJsBody() {
-        const rect = Bodies.rectangle(
-            this.getCenter()[0],
-            this.getCenter()[1],
-            this.width,
-            this.height,
-            {
-                mass: 10,
-                restitution: 0.9,
-                friction: 0.005,
-                render: {
-                    fillStyle: this.color,
-                    strokeStyle: "1px solid" + this.stroke
-                },
-                isStatic: this.isStatic
-            }      
-        );
+    resetMatterJsBody() {
+        this.matterJsBody = null;
+    }
 
-        return rect;
+    getMatterJsBody() {
+        if(!this.matterJsBody) {
+            this.matterJsBody = Bodies.rectangle(
+                this.getCenter().x,
+                this.getCenter().y,
+                this.width,
+                this.height,
+                {
+                    mass: 10,
+                    restitution: 0.9,
+                    friction: 0.005,
+                    render: {
+                        fillStyle: this.color,
+                        strokeStyle: "1px solid" + this.stroke
+                    },
+                    isStatic: this.isStatic
+                }      
+            );
+        }
+
+        return this.matterJsBody;
     }
 }
 

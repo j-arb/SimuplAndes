@@ -9,7 +9,16 @@ class PolyProps {
         this.stroke = "black";
         this.vertices = [{x: origin[0], y: origin[1]}];
         this.isStatic = false;
-        this.anchors = []
+        this.anchors = [];
+        this.matterJsBody = null;
+    }
+
+    relativeMove(x, y) {
+        this.vertices.forEach((vertex, i) => {
+            const newX = vertex.x + x;
+            const newY = vertex.y + y;
+            this.vertices[i] = {x: newX, y: newY};
+        });
     }
 
     addAnchor(anchor) {
@@ -54,13 +63,13 @@ class PolyProps {
         return points;
     }
 
-    getCenterOfMass() {
+    getCenter() {
         const vertices = Vertices.hull(this.vertices);
         return Vertices.centre(vertices);
     }
 
     getRelativeVertices() {
-        const cm = this.getCenterOfMass();
+        const cm = this.getCenter();
         const vertices = [];
         this.vertices.forEach((vertex) => {
             vertices.push({x: vertex.x - cm.x, y: vertex.y - cm.y});
@@ -69,27 +78,33 @@ class PolyProps {
         return Vertices.clockwiseSort(vertices);
     }
 
+    resetMatterJsBody() {
+        this.matterJsBody = null;
+    }
+
     getMatterJsBody() {
-        const cm = this.getCenterOfMass();
-        let vertices = this.getRelativeVertices();
-        vertices = Vertices.hull(vertices);
+        if(!this.matterJsBody) {
+            const cm = this.getCenter();
+            let vertices = this.getRelativeVertices();
+            vertices = Vertices.hull(vertices);
+    
+            this.matterJsBody = Bodies.fromVertices(
+                cm.x, cm.y,
+                vertices,
+                {
+                    mass: 10,
+                    restitution: 0.9,
+                    friction: 0.005,
+                    render: {
+                        fillStyle: this.color,
+                        strokeStyle: "1px solid " + this.stroke
+                    },
+                    isStatic: this.isStatic
+                }      
+            );
+        }
 
-        const body = Bodies.fromVertices(
-            cm.x, cm.y,
-            vertices,
-            {
-                mass: 10,
-                restitution: 0.9,
-                friction: 0.005,
-                render: {
-                    fillStyle: this.color,
-                    strokeStyle: "1px solid " + this.stroke
-                },
-                isStatic: this.isStatic
-            }      
-        );
-
-        return body;
+        return this.matterJsBody;
     }
 
     getKonvaComponent(onBodyClick, onAnchorClick) {

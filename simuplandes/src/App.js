@@ -6,12 +6,20 @@ import Player from './components/player/Player';
 
 function App() {
   const [bodies, setBodies] = useState([]);
+  const [constraints, setConstraints] = useState({});
 
   return (
     <MemoryRouter initialEntries={["/editor"]}>
       <Routes>
-        <Route path='editor' element={<Editor worldBodies={bodies} setWorldBodies={setBodies} />} />
-        <Route path='player' element={<Player worldBodies={bodies} />} />
+        <Route path='editor' element={
+          <Editor
+            worldBodies={bodies}
+            worldConstraints={constraints}
+            setWorldBodies={setBodies}
+            setWorldConstraints={setConstraints}
+          />
+        }/>
+        <Route path='player' element={<Player worldBodies={bodies} worldConstraints={constraints}/>} />
       </Routes>
     </MemoryRouter>
   );
