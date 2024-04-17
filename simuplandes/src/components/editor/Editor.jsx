@@ -10,19 +10,17 @@ import RotConstraintTool from "../../logic/tools/RotConstraintTool";
 import ConstraintProps from "../../logic/Props/ConstraintProps";
 
 function Editor (props) {
+  const noToolLabelText = "1: circulos, 2: rectangulos, 3: poligonos, 4: fijar / liberar cuerpo, " + 
+                          "5: punto de aclaje, 6: restricción rotacional, p: iniciar simulación"
   const [bodies, setBodies] = useState(props.worldBodies);
   const [constraints, setConstraints] = useState(props.worldConstraints);
   const tool = useRef(null);
-  const [labelText, setLabelText] = useState("")
+  const [labelText, setLabelText] = useState(noToolLabelText)
   const navigate = useNavigate();
   const [popUp, setPopUp] = useState(null);
   const mainDiv = useRef();
 
   useEffect(() => {
-    if (tool.current == null) {
-      setTool("none");
-    }
-
     mainDiv.current.focus();
   }, [bodies]);
 
@@ -30,7 +28,6 @@ function Editor (props) {
     if(tool.current) {
       if(tool.current.handleClick) {
         tool.current.handleClick(e);
-        
         if(tool.current.isDone()) {
           setTool("none");
         }
@@ -73,7 +70,6 @@ function Editor (props) {
   }
 
   /**
-   * 
    * @param {ConstraintProps} constraint 
    */
   const updateConstraint = (constraint)  => {
@@ -129,8 +125,7 @@ function Editor (props) {
     } else if(type === "none") {
       tool.current = null;
       setLabelText(
-        "1: circulos, 2: rectangulos, 3: poligonos, 4: fijar / liberar cuerpo, " + 
-          "5: punto de aclaje, 6: restricción rotacional, p: iniciar simulación"
+        noToolLabelText
       );
     }
   }
