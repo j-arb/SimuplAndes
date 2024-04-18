@@ -3,6 +3,7 @@ import { Stage, Layer, Text } from "react-konva"
 import CircleTool from "../../logic/tools/CircleTool";
 import RectTool from "../../logic/tools/RectTool";
 import PolyTool from "../../logic/tools/PolyTool";
+import VectorTool from "../../logic/tools/VectorTool";
 import { useNavigate } from "react-router";
 import FixBodyTool from "../../logic/tools/FixBodyTool";
 import AnchorTool from "../../logic/tools/AnchorTool";
@@ -10,9 +11,12 @@ import RotConstraintTool from "../../logic/tools/RotConstraintTool";
 import ConstraintProps from "../../logic/Props/ConstraintProps";
 
 function Editor (props) {
-  const noToolLabelText = "1: circulos, 2: rectangulos, 3: poligonos, 4: fijar / liberar cuerpo, " + 
-                          "5: punto de aclaje, 6: restricción rotacional, p: iniciar simulación"
+  const noToolLabelText = "c: circulos, r: rectangulos, p: poligonos, f: fijar / liberar cuerpo, " + 
+                          "a: punto de aclaje, o: restricción rotacional, i: restricción prismatica, " +
+                          "u: fuerza, v: velocidad, t: torque" + "e: iniciar simulación"
   const [bodies, setBodies] = useState(props.worldBodies);
+  const [forces, setForces] = useState([]);
+  const [velocities, setVelocities] = useState([]);
   const [constraints, setConstraints] = useState(props.worldConstraints);
   const tool = useRef(null);
   const [labelText, setLabelText] = useState(noToolLabelText)
@@ -69,6 +73,18 @@ function Editor (props) {
     setBodies(bodies2); 
   }
 
+  const updateForce = (force) => {
+    const forces2 = [...forces];
+    forces2[force.id] = force;
+    setForces(forces2);
+  }
+
+  const updateVelocities = (velocity) => {
+    const vels2 = [...velocities];
+    vels2[velocity.id] = velocity;
+    setVelocities(vels2);
+  }
+
   /**
    * @param {ConstraintProps} constraint 
    */
@@ -79,19 +95,23 @@ function Editor (props) {
   }
 
   const onKeyDownHanlder = (e) => {
-    if (e.key === "1") {
+    if (e.key === "c") {
       setTool("circle")
-    } else if (e.key === "2") {
+    } else if (e.key === "r") {
       setTool("rect")
-    } else if(e.key === "3") {
-      setTool("poly")
-    } else if(e.key === "4") {
-      setTool("fix body");
-    } else if(e.key === "5") {
-      setTool("anchor");
-    } else if(e.key === "6") {
-      setTool("constraint");
     } else if(e.key === "p") {
+      setTool("poly")
+    } else if(e.key === "f") {
+      setTool("fix body");
+    } else if(e.key === "a") {
+      setTool("anchor");
+    } else if(e.key === "o") {
+      setTool("constraint");
+    } else if(e.key === "u") {
+      setTool("force");
+    } else if(e.key === "v") {
+      setTool("velocity")
+    } else if(e.key === "e") {
       navigate("/player");
       const constraints2 = {...constraints};
       const bodies2 = [...bodies];
@@ -122,6 +142,10 @@ function Editor (props) {
     } else if(type === "constraint") {
       tool.current = new RotConstraintTool(updateConstraint, setLabelText);
       setLabelText(tool.current.getLabelText());
+    } else if(type === "force") {
+      tool.current = new VectorTool(updateForce, setLabelText, "force");
+    } else if(type === "velocity") {
+      tool.current = new VectorTool(updateForce, setLabelText, "velocity");
     } else if(type === "none") {
       tool.current = null;
       setLabelText(

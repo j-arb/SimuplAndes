@@ -107,7 +107,7 @@ class PolyProps {
         return this.matterJsBody;
     }
 
-    getKonvaComponent(onBodyClick, onAnchorClick) {
+    getKonvaComponent(onBodyClick, onAnchorClick, onVectorClick, onTorqueClick) {
         return (
             <>
                 <Line
@@ -119,7 +119,7 @@ class PolyProps {
                 />
                 {
                     this.anchors.map((anchor) => {
-                        return anchor.getKonvaComponent(onAnchorClick);
+                        return anchor.getKonvaComponent(onAnchorClick, onVectorClick, onTorqueClick);
                     })
                 }
             </>

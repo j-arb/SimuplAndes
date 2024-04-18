@@ -53,7 +53,7 @@ class RectProps {
         return {x: x, y: y};
     }
 
-    getKonvaComponent(onBodyClick, onAnchorClick) {
+    getKonvaComponent(onBodyClick, onAnchorClick, onVectorClick, onTorqueClick) {
         return (
             <>
                 <Rect
@@ -67,7 +67,7 @@ class RectProps {
                 />
                 {
                     this.anchors.map((anchor) => {
-                        return anchor.getKonvaComponent(onAnchorClick);
+                        return anchor.getKonvaComponent(onAnchorClick, onVectorClick, onTorqueClick);
                     })
                 }
             </>

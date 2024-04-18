@@ -42,7 +42,7 @@ class CircleProps {
         this.center[1] += y;
     }
 
-    getKonvaComponent(onBodyClick, onAnchorClick) {
+    getKonvaComponent(onBodyClick, onAnchorClick, onVectorClick, onTorqueClick) {
         return (
             <>
                 <Circle
@@ -55,7 +55,7 @@ class CircleProps {
                 />
                 {
                     this.anchors.map((anchor) => {
-                        return anchor.getKonvaComponent(onAnchorClick);
+                        return anchor.getKonvaComponent(onAnchorClick, onVectorClick, onTorqueClick);
                     })
                 }
             </>
