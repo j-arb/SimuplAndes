@@ -8,6 +8,7 @@ class AnchorProps {
         this.position = {x: null, y: null};
         this.forces = [];
         this.velocities = [];
+        this.torques = [];
     }
 
     // ======== SETTERS ========
@@ -28,6 +29,10 @@ class AnchorProps {
 
     addVelocity(velocity) {
         this.velocities.push(velocity);
+    }
+
+    addTorque(torque) {
+        this.torques.push(torque);
     }
 
     // ======== GETTERS ========

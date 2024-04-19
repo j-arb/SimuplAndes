@@ -8,149 +8,98 @@ import { useNavigate } from "react-router";
 import FixBodyTool from "../../logic/tools/FixBodyTool";
 import AnchorTool from "../../logic/tools/AnchorTool";
 import RotConstraintTool from "../../logic/tools/RotConstraintTool";
-import ConstraintProps from "../../logic/Props/ConstraintProps";
+import ConstraintProps from "../../logic/Props/RotConstraintProps";
+import WorldProps from "../../logic/Props/WorldProps";
+import ToolSelectorTool from "../../logic/tools/ToolSelectorTool";
+import { copyResponse } from "workbox-core";
+import { useReducer } from "react";
+import TorqueTool from "../../logic/tools/TorqueTool";
 
 function Editor (props) {
-  const noToolLabelText = "c: circulos, r: rectangulos, p: poligonos, f: fijar / liberar cuerpo, " + 
-                          "a: punto de aclaje, o: restricción rotacional, i: restricción prismatica, " +
-                          "u: fuerza, v: velocidad, t: torque" + "e: iniciar simulación"
-  const [bodies, setBodies] = useState(props.worldBodies);
-  const [forces, setForces] = useState([]);
-  const [velocities, setVelocities] = useState([]);
-  const [constraints, setConstraints] = useState(props.worldConstraints);
-  const tool = useRef(null);
-  const [labelText, setLabelText] = useState(noToolLabelText)
-  const navigate = useNavigate();
+
+  /**
+   * @type {React.MutableRefObject<WorldProps | null>}
+   */
+  const worldProps = useRef(new WorldProps());
+  const [refreshCount, setRefreshCount] = useState(0);
+  const [labelText, setLabelText] = useState("");
+  const [tool, _setTool] = useState();
   const [popUp, setPopUp] = useState(null);
-  const mainDiv = useRef();
+  const [, updateEditor] = useReducer(x => x + 1, 0);
+  const navigate = useNavigate();
+  /**
+   * @type {React.MutableRefObject<HTMLDivElement | null>}
+   */
+  const mainDiv = useRef(null);
 
   useEffect(() => {
     mainDiv.current.focus();
-  }, [bodies]);
+    setTool("toolSelect");
+  }, []);
+
+  // const updateEditor = () => {
+  //   console.log("1");
+  //   setRefreshCount(refreshCount + 1);
+  // }
+
+  // ======== EVENT HANDLERS ========
 
   const onMouseDown = (e) => {
-    if(tool.current) {
-      if(tool.current.handleClick) {
-        tool.current.handleClick(e);
-        if(tool.current.isDone()) {
-          setTool("none");
-        }
-      }
+    if(tool.handleClick) {
+      tool.handleClick(e);
     }
   }
 
   const onMouseMove = (e) => {
-    if (tool.current) {
-      if(tool.current.handleMouseMove) {
-        tool.current.handleMouseMove(e);
-      }
+    if(tool.handleMouseMove) {
+      tool.handleMouseMove(e);
     }
   }
 
   const onBodyClick = (body) => {
-    if (tool.current && tool.current.handleBodyClick) {
-      tool.current.handleBodyClick(body);
-
-      if(tool.current.isDone()) {
-        setTool("none");
-      }
+    if (tool.handleBodyClick) {
+      tool.handleBodyClick(body);
     }
   }
 
   const onAnchorClick = (anchor) => {
-    if (tool.current && tool.current.handleAnchorClick) {
-      tool.current.handleAnchorClick(anchor);
-
-      if(tool.current.isDone()) {
-        setTool("none");
-      }
+    if (tool.handleAnchorClick) {
+      tool.handleAnchorClick(anchor);
     }
   }
 
-  const updateBody = (body) => {
-    const bodies2 = [...bodies];
-    bodies2[body.id] = body;
-    setBodies(bodies2); 
-  }
-
-  const updateForce = (force) => {
-    const forces2 = [...forces];
-    forces2[force.id] = force;
-    setForces(forces2);
-  }
-
-  const updateVelocities = (velocity) => {
-    const vels2 = [...velocities];
-    vels2[velocity.id] = velocity;
-    setVelocities(vels2);
-  }
-
-  /**
-   * @param {ConstraintProps} constraint 
-   */
-  const updateConstraint = (constraint)  => {
-    const constraints2 = {...constraints};
-    constraints2[constraint.id] = constraint;
-    setConstraints(constraints2);
+  const onToolDone = () => {
+    setTool("toolSelect");
   }
 
   const onKeyDownHanlder = (e) => {
-    if (e.key === "c") {
-      setTool("circle")
-    } else if (e.key === "r") {
-      setTool("rect")
-    } else if(e.key === "p") {
-      setTool("poly")
-    } else if(e.key === "f") {
-      setTool("fix body");
-    } else if(e.key === "a") {
-      setTool("anchor");
-    } else if(e.key === "o") {
-      setTool("constraint");
-    } else if(e.key === "u") {
-      setTool("force");
-    } else if(e.key === "v") {
-      setTool("velocity")
-    } else if(e.key === "e") {
-      navigate("/player");
-      const constraints2 = {...constraints};
-      const bodies2 = [...bodies];
-      props.setWorldConstraints(constraints2);
-      props.setWorldBodies(bodies2);
+    if (tool.handleKeyDown) {
+      tool.handleKeyDown(e);
     }
   }
 
   const setTool = (type) => {
+    
     if (type === "circle") {
-      tool.current = new CircleTool(bodies.length, updateBody, setLabelText);
-      setBodies([...bodies, tool.current.getBody()]);
-      setLabelText(tool.current.getLabelText());
+      _setTool(new CircleTool(worldProps.current, setLabelText, onToolDone, updateEditor));
     } else if(type === "rect") {
-      tool.current = new RectTool(bodies.length, updateBody, setLabelText);
-      setBodies([...bodies, tool.current.getBody()]);
-      setLabelText(tool.current.getLabelText());
+      _setTool(new RectTool(worldProps.current, setLabelText, onToolDone, updateEditor));
     } else if(type === "poly") {
-      tool.current = new PolyTool(bodies.length, updateBody, setLabelText);
-      setBodies([...bodies, tool.current.getBody()]);
-      setLabelText(tool.current.getLabelText());
+      _setTool(new PolyTool(worldProps.current, setLabelText, onToolDone, updateEditor));
     } else if(type === "fix body") {
-      tool.current = new FixBodyTool();
-      setLabelText(tool.current.getLabelText());
+      _setTool(new FixBodyTool(setLabelText, onToolDone));
     } else if(type === "anchor") {
-      tool.current = new AnchorTool(updateBody, setLabelText);
-      setLabelText(tool.current.getLabelText());
-    } else if(type === "constraint") {
-      tool.current = new RotConstraintTool(updateConstraint, setLabelText);
-      setLabelText(tool.current.getLabelText());
+      _setTool(new AnchorTool(setLabelText, onToolDone));
+    } else if(type === "rotConstraint") {
+      _setTool(new RotConstraintTool(setLabelText, onToolDone));
     } else if(type === "force") {
-      tool.current = new VectorTool(updateForce, setLabelText, "force");
+      _setTool(new VectorTool(setLabelText, onToolDone, updateEditor, "force"));
     } else if(type === "velocity") {
-      tool.current = new VectorTool(updateForce, setLabelText, "velocity");
-    } else if(type === "none") {
-      tool.current = null;
-      setLabelText(
-        noToolLabelText
-      );
+      _setTool(new VectorTool(setLabelText, onToolDone, updateEditor, "velocity"));
+    } else if(type === "torque") {
+      _setTool(new TorqueTool(setLabelText, onToolDone));
+    } else if(type === "toolSelect") {
+      _setTool(new ToolSelectorTool(setTool, setLabelText));
     }
   }
 
@@ -165,7 +114,7 @@ function Editor (props) {
       onMouseMove={onMouseMove}>
         <Layer>
           <Text text={labelText} />
-          {bodies.map((body) => {
+          {worldProps.current.getBodyList().map((body) => {
             return body.getKonvaComponent(onBodyClick, onAnchorClick)
           })}
         </Layer>

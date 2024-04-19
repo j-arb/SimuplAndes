@@ -1,9 +1,10 @@
 import { Bodies } from "matter-js";
 import { Circle } from "react-konva";
+import { v4 as uuidv4 } from "uuid";
 
 class CircleProps {
-    constructor(id, center, radius) {
-        this.id = id;
+    constructor(center, radius) {
+        this.id = uuidv4();
         this.center = center;
         this.radius = radius;
         this.color = "green";

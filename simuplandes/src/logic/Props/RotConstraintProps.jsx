@@ -1,7 +1,7 @@
 import { Constraint } from "matter-js";
 import { v4 as uuidv4 } from "uuid";
 
-export default class ConstraintProps {
+export default class RotConstraintProps {
     constructor() {
         this.id = uuidv4();
         this.anchorA = null;

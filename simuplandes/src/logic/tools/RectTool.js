@@ -1,12 +1,16 @@
 import RectProps from "../Props/RectProps";
 
 class RectTool {
-    constructor(id, updateBody, setLabelText) {
-        this.id = id
-        this.state = "initial";
-        this.body = new RectProps(this.id, [0,0], 0,0);
-        this.updateBody = updateBody;
+    constructor(worldProps, setLabelText, onToolDone, updateEditor) {
+        this.worldProps = worldProps;
         this.setLabelText = setLabelText;
+        this.onToolDone = onToolDone;
+        this.updateEditor = updateEditor;
+
+        this.state = "initial";
+        this.body = new RectProps([0,0], 0,0);
+        worldProps.addBody(this.body);
+        this.setLabelText(this.getLabelText());
     }
 
     handleClick(e) {
@@ -14,7 +18,6 @@ class RectTool {
             this.state = "centerDefined";
             const origin = [e.evt.clientX, e.evt.clientY];
             this.body.origin = origin;
-            this.updateBody(this.body);
             this.setLabelText(this.getLabelText());
         } else if (this.state === "centerDefined") {
             this.state = "done";
@@ -24,7 +27,7 @@ class RectTool {
             const y2 = e.evt.clientY;
             this.body.width = x2 - x1;
             this.body.height = y2 - y1;
-            this.updateBody(this.body);
+            this.onToolDone();
         }
     }
 
@@ -36,7 +39,7 @@ class RectTool {
             const y2 = e.evt.clientY;
             this.body.width = x2 - x1;
             this.body.height = y2 - y1;
-            this.updateBody(this.body);
+            this.updateEditor();
         }
     }
 

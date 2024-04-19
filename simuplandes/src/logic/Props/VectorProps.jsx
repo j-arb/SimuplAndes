@@ -1,13 +1,16 @@
 import { Line } from "react-konva";
 import { v4 as uuidv4 } from "uuid";
 import KonvaArrow from "../../components/utils/KonvaArrow";
+import AnchorProps from "./AnchorProps";
 
 export default class VectorProps {
     // TODO take into account body rotations.
     constructor() {
         this.id = uuidv4();
+        /**
+         * @type {AnchorProps | null}
+         */
         this.anchor = null;
-        this.relativeOrigin = {x: null, y: null};
         this.vector = {x: null, y: null};
         this.fixedDirection = true;
         this.color = "black";
@@ -20,10 +23,7 @@ export default class VectorProps {
     }
 
     getAbsoluteOrigin() {
-        const bodyOrigin = this.anchor.getBody().getCenter();
-        const x = bodyOrigin.x + this.relativeOrigin.x;
-        const y = bodyOrigin.y + this.relativeOrigin.y;
-        return {x: x, y: y};
+        return this.anchor.getAbsolutePosition();
     }
 
     getMagnitude() {
@@ -62,17 +62,6 @@ export default class VectorProps {
         const xv = x - absOrigin.x;
         const yv = y - absOrigin.y;
         this.vector = {x: xv, y: yv};
-    }
-
-    setOriginAbsolute(x, y) {
-        const bodyOrigin = this.anchor.getBody().getCenter();
-        const x_rel = x - bodyOrigin.x;
-        const y_rel = y - bodyOrigin.y;
-        this.relativeOrigin = {x: x_rel, y: y_rel};
-    }
-
-    setOriginRelative(x, y) {
-        this.relativeOrigin = {x: x, y: y};
     }
 
     setAnchor(anchor) {

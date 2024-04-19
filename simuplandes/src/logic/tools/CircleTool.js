@@ -1,12 +1,16 @@
 import CircleProps from "../Props/CircleProps";
 
 class CircleTool {
-    constructor(id, updateBody, setLabelText) {
-        this.id = id
-        this.state = "initial";
-        this.circle = new CircleProps(this.id, [0,0], 0);
+    constructor(worldProps, setLabelText, onToolDone, updateEditor) {
         this.setLabelText = setLabelText;
-        this.updateBody = updateBody;
+        this.worldProps = worldProps;
+        this.onToolDone = onToolDone;
+        this.updateEditor = updateEditor;
+
+        this.state = "initial";
+        this.setLabelText(this.getLabelText());
+        this.circle = new CircleProps([0,0], 0);
+        worldProps.addBody(this.circle);
     }
 
     handleClick(e) {
@@ -14,7 +18,6 @@ class CircleTool {
             const center = [e.evt.clientX, e.evt.clientY];
             this.circle.center = center;
             this.state = "centerDefined";
-            this.updateBody(this.circle);
             this.setLabelText(this.getLabelText());
         } else if (this.state === "centerDefined") {
             this.state = "done";
@@ -24,8 +27,7 @@ class CircleTool {
             const y2 = e.evt.clientY;
             const rad = Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow((y2 - y1), 2))
             this.circle.radius = rad;
-            this.updateBody(this.circle);
-            this.setLabelText(this.getLabelText());
+            this.onToolDone();
         }
     }
 
@@ -37,7 +39,7 @@ class CircleTool {
             const y2 = e.evt.clientY;
             const rad = Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow((y2 - y1), 2))
             this.circle.radius = rad;
-            this.updateBody(this.circle);
+            this.updateEditor();
         }
     }
 

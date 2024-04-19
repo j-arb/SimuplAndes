@@ -1,6 +1,8 @@
 class FixBodyTool {
-    constructor() {
+    constructor(setLabelText, onToolDone) {
+        this.onToolDone = onToolDone;
         this.state = "initial";
+        setLabelText(this.getLabelText());
     }
 
     isDone() {
@@ -16,7 +18,6 @@ class FixBodyTool {
     }
 
     handleBodyClick(body) {
-        this.state = "done";
         if(body.isStatic) {
             body.isStatic = false;
             alert("Cuerpo liberado");
@@ -24,6 +25,8 @@ class FixBodyTool {
             body.isStatic = true;
             alert("Cuerpo fijado");
         }
+        this.state = "done";
+        this.onToolDone();
     }
 }
 

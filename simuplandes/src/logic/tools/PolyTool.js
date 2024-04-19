@@ -1,12 +1,16 @@
 import PolyProps from "../Props/PolyProps";
 
 class PolyTool {
-    constructor(id, updateBody, setLabelText) {
-        this.id = id
-        this.state = "initial";
-        this.body = new PolyProps(id, [0,0]);
-        this.updateBody = updateBody;
+    constructor(worldProps, setLabelText, onToolDone, updateEditor) {
+        this.worldProps = worldProps;
         this.setLabelText = setLabelText;
+        this.onToolDone = onToolDone;
+        this.updateEditor = updateEditor;
+
+        this.state = "initial";
+        this.body = new PolyProps([0,0]);
+        this.setLabelText(this.getLabelText());
+        this.worldProps.addBody(this.body);
     }
 
     handleClick(e) {
@@ -16,22 +20,22 @@ class PolyTool {
             this.body.origin = origin;
             this.body.editLastPoint(origin[0], origin[1]);
             this.body.addPoint(origin[0], origin[1]);
-            this.updateBody(this.body);
             this.setLabelText(this.getLabelText());
         } else if (this.state === "centerDefined") {
             // next point. Used to follow mouse move
             this.body.addPoint(e.evt.clientX, e.evt.clientY);
             if(e.evt.ctrlKey) {
                 this.state = "done";
+                this.onToolDone();
             }
-            this.updateBody(this.body);
+            this.updateEditor();
         }
     }
 
     handleMouseMove(e) {
         if (this.state === "centerDefined") {
             this.body.editLastPoint(e.evt.clientX, e.evt.clientY);
-            this.updateBody(this.body);
+            this.updateEditor();
         }
     }
 

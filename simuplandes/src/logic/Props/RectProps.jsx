@@ -1,9 +1,10 @@
 import { Bodies } from "matter-js";
 import { Rect } from "react-konva";
+import { v4 as uuidv4 } from "uuid";
 
 class RectProps {
-    constructor(id, origin, width, height, onClick) {
-        this.id = id;
+    constructor(origin, width, height, onClick) {
+        this.id = uuidv4();
         this.origin = origin;
         this.width = width;
         this.height = height;

@@ -1,29 +1,22 @@
 import { v4 as uuidv4 } from "uuid";
+import AnchorProps from "./AnchorProps";
 
 export default class TorqueProps {
     constructor() {
         this.id = uuidv4();
-        this.body = null;
-        this.relativeOrigin = {x: null, y: null};
+        /**
+         * @type {AnchorProps | null}
+         */
+        this.anchor = null;
         this.torque = null;
     }
 
     getAbsoluteOrigin() {
-        const bodyOrigin = this.body.getCenter();
-        const x = bodyOrigin.x + this.relativeOrigin.x;
-        const y = bodyOrigin.y + this.relativeOrigin.y;
-        return {x: x, y: y};
+        return this.anchor.getAbsolutePosition();
     }
 
-    setOrigin(x, y) {
-        const bodyOrigin = this.body.getCenter();
-        const x_rel = x - bodyOrigin.x;
-        const y_rel = y - bodyOrigin.y;
-        this.relativeOrigin = {x: x_rel, y: y_rel};
-    }
-
-    setBody(body) {
-        this.body = body;
+    setAnchor(anchor) {
+        this.anchor = anchor;
     }
 
     setTorque(torque) {

@@ -1,11 +1,13 @@
 import AnchorProps from "../Props/AnchorProps";
 
 export default class AnchorTool {
-    constructor(updateBody, setLabelText) {
+    constructor(setLabelText, onToolDone) {
+        this.setLabelText = setLabelText;
+        this.onToolDone = onToolDone;
+
         this.state = "initial";
         this.anchorPros = new AnchorProps();
-        this.updateBody = updateBody;
-        this.setLabelText = setLabelText;
+        setLabelText(this.getLabelText());
     }
 
     handleClick(e) {
@@ -13,7 +15,7 @@ export default class AnchorTool {
             this.state = "done";
             this.anchorPros.setPosition(e.evt.clientX, e.evt.clientY);
             this.anchorPros.body.addAnchor(this.anchorPros);
-            this.updateBody(this.anchorPros.body);
+            this.onToolDone();
         }
     }
 

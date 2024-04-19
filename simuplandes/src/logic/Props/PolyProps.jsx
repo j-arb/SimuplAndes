@@ -1,9 +1,10 @@
 import { Bodies, Vertices } from "matter-js";
 import { Line } from "react-konva";
+import {v4 as uuidv4} from "uuid";
 
 class PolyProps {
-    constructor(id, origin) {
-        this.id = id;
+    constructor(origin) {
+        this.id = uuidv4();
         this.origin = origin;
         this.color = "yellow";
         this.stroke = "black";

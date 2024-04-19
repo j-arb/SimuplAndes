@@ -4,18 +4,18 @@ import AnchorProps from "../Props/AnchorProps";
 export default class VectorTool {
     /**
      * 
-     * @param {*} updateVector 
-     * @param {*} setLabelText 
      * @param {String} type - either "force" or "velocity"
      */
-    constructor(updateVector, setLabelText, type) {
-        this.updateVector = updateVector;
+    constructor(setLabelText, onToolDone, updateEditor, type) {
         this.setLabelText = setLabelText;
+        this.onToolDone = onToolDone;
+        this.updateEditor = updateEditor;
+
         this.vectorp = new VectorProps();
         if(type === "force") {
-            this.vectorp.color = "red";
+            this.vectorp.color = "black";
         } else if(type === "velocity") {
-            this.vectorp.color = "green";
+            this.vectorp.color = "blue";
         }
         this.setLabelText("Seleccione el anclaje")
         this.state = "initial";
@@ -34,8 +34,6 @@ export default class VectorTool {
             } else if(this.type === "velocity") {
                 anchor.addVelocity(this.vectorp);
             }
-            this.vectorp.setOriginAbsolute(pos.x, pos.y);
-            this.updateVector(this.vectorp);
             this.setLabelText("Defina el vector");
             this.state = "originDefined";
         }
@@ -46,7 +44,7 @@ export default class VectorTool {
             const posX = e.evt.clientX;
             const posY = e.evt.clientY;
             this.vectorp.setVectorEndAbsolute(posX, posY);
-            this.updateVector(this.vectorp);
+            this.updateEditor();
         }
     }
 
@@ -55,8 +53,8 @@ export default class VectorTool {
             const posX = e.evt.clientX;
             const posY = e.evt.clientY;
             this.vectorp.setVectorEndAbsolute(posX, posY);
-            this.updateVector(this.vectorp);
             this.state = "done";
+            this.onToolDone();
         }
     }
 
