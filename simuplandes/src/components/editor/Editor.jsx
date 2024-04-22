@@ -8,20 +8,20 @@ import { useNavigate } from "react-router";
 import FixBodyTool from "../../logic/tools/FixBodyTool";
 import AnchorTool from "../../logic/tools/AnchorTool";
 import RotConstraintTool from "../../logic/tools/RotConstraintTool";
-import ConstraintProps from "../../logic/Props/RotConstraintProps";
 import WorldProps from "../../logic/Props/WorldProps";
 import ToolSelectorTool from "../../logic/tools/ToolSelectorTool";
-import { copyResponse } from "workbox-core";
 import { useReducer } from "react";
 import TorqueTool from "../../logic/tools/TorqueTool";
+import Css from "./Editor.module.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlay } from "@fortawesome/free-solid-svg-icons";
 
 function Editor (props) {
 
   /**
    * @type {React.MutableRefObject<WorldProps | null>}
    */
-  const worldProps = useRef(new WorldProps());
-  const [refreshCount, setRefreshCount] = useState(0);
+  const worldProps = props.worldProps;
   const [labelText, setLabelText] = useState("");
   const [tool, _setTool] = useState();
   const [popUp, setPopUp] = useState(null);
@@ -103,12 +103,21 @@ function Editor (props) {
     }
   }
 
+  const playSimulation = () => {
+    navigate("/player")
+  }
+
   return (
     // Stage - is a div wrapper
     // Layer - is an actual 2d canvas element, so you can have several layers inside the stage
     // Rect and Circle are not DOM elements. They are 2d shapes on canvas
     <div onKeyDown={onKeyDownHanlder} tabIndex="0" ref={mainDiv}>
       { popUp ? popUp : <></> }
+      <div className={Css.playBtnDiv}>
+        <button className={Css.playBtn + " btn"} onClick={playSimulation}>
+          <FontAwesomeIcon icon={faPlay} className={Css.playBtnIcon} />
+        </button>
+      </div>
       <Stage width={window.innerWidth} height={window.innerHeight}
       onMouseDown={onMouseDown}
       onMouseMove={onMouseMove}>
