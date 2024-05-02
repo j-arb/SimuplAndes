@@ -1,0 +1,16 @@
+.mainDiv {
+    position: fixed;
+    bottom: 30px;
+    /* z-index: 1; */
+    width: 100vw;
+    padding: 0px 20px;
+    display: flex;
+    flex-direction: column;
+    opacity: 0.8;
+}
+
+.instructionsContainer {
+    border-radius: 15px;
+    background-color: #F0F0F0;
+    text-align: center;
+}

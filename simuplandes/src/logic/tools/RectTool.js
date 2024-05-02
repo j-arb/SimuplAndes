@@ -60,6 +60,10 @@ class RectTool {
             return "";
         }
     }
+
+    abort() {
+        this.worldProps.removeBody(this.body);
+    }
 }
 
 export default RectTool;

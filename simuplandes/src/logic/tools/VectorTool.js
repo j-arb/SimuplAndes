@@ -61,4 +61,12 @@ export default class VectorTool {
     isDone() {
         return this.state === "done";
     }
+
+    abort() {
+        if(this.type === "force") {
+            this.vectorp.anchor && this.vectorp.anchor.removeForce(this.vectorp);
+        } else if(this.type === "velocity") {
+            this.vectorp.anchor && this.vectorp.anchor.removeVelocity(this.vectorp);
+        }
+    }
 }
