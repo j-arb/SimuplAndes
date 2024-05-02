@@ -2,3 +2,23 @@
     width: 100% !important;
     height: 100% !important;
 }
+
+.playBtnDiv {
+    position: fixed;
+    right: 0px;
+    top: 0px;
+    z-index: 1;
+}
+
+.playBtn {
+    background-color: transparent;
+}
+
+.playBtn:active {
+    border: none;
+}
+
+.playBtnIcon {
+    color: green;
+    font-size: 30px;
+}

@@ -34,7 +34,7 @@ export default class RotConstraintTool {
             anchor.getAbsolutePosition().x;
             const offsetY = this.constraint.anchorA.getAbsolutePosition().y - 
             anchor.getAbsolutePosition().y;
-            anchor.body.relativeMove(offsetX, offsetY);
+            // anchor.body.relativeMove(offsetX, offsetY);
             this.constraint.setAnchorB(anchor);
             this.worldProps.addRotConstraint(this.constraint);
             this.onToolDone();

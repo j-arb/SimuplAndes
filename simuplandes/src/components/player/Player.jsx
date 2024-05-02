@@ -1,16 +1,23 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Engine, Render, Bodies, Runner, Composite } from 'matter-js'
 import { useNavigate } from 'react-router';
+import Css from "./Player.module.css";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPause, faPlay, faStop } from '@fortawesome/free-solid-svg-icons';
 
 export default function Player (props) {
   const scene = useRef();
   const navigate = useNavigate();
   const engine = useRef(Engine.create());
   const runner = useRef(Runner.create());
+  const [ppIcon, setPpIcon] = useState(faPause);
   
   useEffect(() => {
     const cw = document.body.clientWidth;
     const ch = document.body.clientHeight;
+
+    const worldBodies = props.worldProps.current.getBodyList();
+    const worldConstraints = props.worldProps.current.getRotConstraintList();
 
     scene.current.focus();
 
@@ -26,21 +33,21 @@ export default function Player (props) {
 
     });
 
-    if (props.worldBodies.length > 32) {
+    if (worldBodies.length > 32) {
       alert("There are more than 32 bodies. Collisions will not be detected");
     }
 
-    props.worldBodies.forEach((body) => {
+    worldBodies.forEach((body) => {
       body.resetMatterJsBody();
       const matterJsBody = body.getMatterJsBody();
-      const group = (props.worldBodies.length <= 32) ? 0 : -1;
-      const category = (props.worldBodies.length <= 32) ? Math.pow(2, body.id) : 1;
-      matterJsBody.collisionFilter.group = group;
-      matterJsBody.collisionFilter.category = category;
+      // const group = (worldBodies.length <= 32) ? 0 : -1;
+      // const category = (worldBodies.length <= 32) ? Math.pow(2, body.id) : 1;
+      // matterJsBody.collisionFilter.group = group;
+      // matterJsBody.collisionFilter.category = category;
       Composite.add(engine.current.world, body.getMatterJsBody());
     });
     
-    Object.values(props.worldConstraints).forEach((constraint) => {
+    worldConstraints.forEach((constraint) => {
       const matterJsConstraint = constraint.getMatterJsConstraint();
       const bodyA = matterJsConstraint.bodyA;
       const bodyB = matterJsConstraint.bodyB;
@@ -61,30 +68,33 @@ export default function Player (props) {
       render.context = null
       render.textures = {}
     }
-  });
+  }, []);
 
-  const handlePress = (e) => {
-    if(e.key === "p") {
-      if (runner.current.enabled) {
-        runner.current.enabled = false
-      } else {
-        runner.current.enabled = true
-      }
-    }
-
-    if(e.key === "e") {
-      navigate("/editor")
+  const playPause = () => {
+    if (runner.current.enabled) {
+      runner.current.enabled = false
+      setPpIcon(faPlay);
+    } else {
+      runner.current.enabled = true
+      setPpIcon(faPause);
     }
   }
 
   return (
-    <div
-      onKeyDown={handlePress}
-      tabIndex="0"
-      ref={scene}
-      style={{height: "100vh", overflow: "hidden"}}
-    >
-
+    <div>
+      <div className={Css.btnsDiv}>
+        <button className={Css.stopBtn + " btn"} onClick={() => navigate("/editor")}>
+          <FontAwesomeIcon icon={faStop} className={Css.stopBtnIcon} />
+        </button>
+        <button className={Css.pouseBtn + " btn"} onClick={playPause}>
+          <FontAwesomeIcon icon={ppIcon} className={Css.pouseBtnIcon} />
+        </button>
+      </div>
+      <div
+        tabIndex="0"
+        ref={scene}
+        style={{height: "100vh", overflow: "hidden"}}
+      ></div>
     </div>
   )
 }

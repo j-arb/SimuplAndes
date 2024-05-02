@@ -1,0 +1,18 @@
+.btnsDiv {
+    position: fixed;
+    right: 0px;
+    top: 0px;
+    z-index: 1;
+}
+
+.stopBtn, .pouseBtn {
+    background-color: transparent;
+}
+
+.stopBtn:active, .pouseBtn:active {
+    border: none;
+}
+
+.stopBtnIcon, .pouseBtnIcon {
+    font-size: 30px;
+}
