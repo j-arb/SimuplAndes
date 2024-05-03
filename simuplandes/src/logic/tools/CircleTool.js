@@ -60,6 +60,10 @@ class CircleTool {
             return "";
         }
     }
+
+    abort() {
+        this.worldProps.removeBody(this.circle);
+    }
 }
 
 export default CircleTool;

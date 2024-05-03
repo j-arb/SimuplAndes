@@ -54,6 +54,10 @@ class PolyTool {
             return "";
         }
     }
+
+    abort() {
+        this.worldProps.removeBody(this.body);
+    }
 }
 
 export default PolyTool;

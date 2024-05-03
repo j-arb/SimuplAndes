@@ -3,9 +3,7 @@ import CircleTool from "./CircleTool";
 export default class ToolSelectorTool {
     constructor(setTool, setLabelText) {
         this.setTool = setTool;
-        setLabelText("c: circulos, r: rectangulos, p: poligonos, f: fijar / liberar cuerpo, " + 
-        "a: punto de aclaje, o: restricción rotacional, i: restricción prismatica, " +
-        "u: fuerza, v: velocidad, t: torque" + "e: iniciar simulación");
+        setLabelText("");
     }
 
     handleKeyDown(e) {
@@ -28,5 +26,9 @@ export default class ToolSelectorTool {
         } else if(e.key === "t") {
             this.setTool("torque");
         }
+    }
+
+    isDone() {
+        return true;
     }
 }

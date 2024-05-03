@@ -23,4 +23,8 @@ export default class TorqueTool {
             this.onToolDone();
         }
     }
+
+    isDone() {
+        return this.state === "done";
+    }
 }

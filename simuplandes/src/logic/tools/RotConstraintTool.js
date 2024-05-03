@@ -1,12 +1,12 @@
 import AnchorProps from "../Props/AnchorProps";
-import ConstraintProps from "../Props/RotConstraintProps";
+import RotConstraintProps from "../Props/RotConstraintProps";
 
 export default class RotConstraintTool {
-    constructor(setLabelText, onToolDone) {
+    constructor(worldProps, setLabelText, onToolDone) {
+        this.worldProps = worldProps;
         this.setLabelText = setLabelText;
         this.onToolDone = onToolDone;
-
-        this.constraint = new ConstraintProps();
+        this.constraint = new RotConstraintProps();
         this.constraint.setLength(0);
         this.state = "initial";
         this.setLabelText(this.getLabelText());
@@ -29,13 +29,14 @@ export default class RotConstraintTool {
             this.constraint.setAnchorA(anchor);
             this.setLabelText(this.getLabelText());
         } else if(this.state === "anchorADefined") {
+            this.state = "done";
             const offsetX = this.constraint.anchorA.getAbsolutePosition().x -
             anchor.getAbsolutePosition().x;
             const offsetY = this.constraint.anchorA.getAbsolutePosition().y - 
             anchor.getAbsolutePosition().y;
             // anchor.body.relativeMove(offsetX, offsetY);
             this.constraint.setAnchorB(anchor);
-            this.state = "done";
+            this.worldProps.addRotConstraint(this.constraint);
             this.onToolDone();
         }
     }

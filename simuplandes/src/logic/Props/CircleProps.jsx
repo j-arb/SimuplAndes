@@ -12,6 +12,7 @@ class CircleProps {
         this.isStatic = false;
         this.anchors = [];
         this.matterJsBody = null;
+        this.rotation = 0;
     }
 
     addAnchor(anchor) {
@@ -28,6 +29,14 @@ class CircleProps {
 
     getCenter() {
         return {x: this.center[0], y: this.center[1]};
+    }
+
+    getRotation() {
+        return this.rotation;
+    }
+
+    setRotation(rot) {
+        this.rotation = rot;
     }
 
     getRadius() {

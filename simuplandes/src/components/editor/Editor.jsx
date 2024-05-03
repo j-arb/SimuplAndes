@@ -11,6 +11,8 @@ import RotConstraintTool from "../../logic/tools/RotConstraintTool";
 import ToolSelectorTool from "../../logic/tools/ToolSelectorTool";
 import { useReducer } from "react";
 import TorqueTool from "../../logic/tools/TorqueTool";
+import ToolSelector from "./tool_selector/ToolSelector";
+import InstructionsBar from "./instructions_bar/InstructionsBar";
 import Css from "./Editor.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlay } from "@fortawesome/free-solid-svg-icons";
@@ -36,21 +38,16 @@ function Editor (props) {
     setTool("toolSelect");
   }, []);
 
-  // const updateEditor = () => {
-  //   console.log("1");
-  //   setRefreshCount(refreshCount + 1);
-  // }
-
   // ======== EVENT HANDLERS ========
 
   const onMouseDown = (e) => {
-    if(tool.handleClick) {
+    if(tool && tool.handleClick) {
       tool.handleClick(e);
     }
   }
 
   const onMouseMove = (e) => {
-    if(tool.handleMouseMove) {
+    if(tool && tool.handleMouseMove) {
       tool.handleMouseMove(e);
     }
   }
@@ -72,13 +69,28 @@ function Editor (props) {
   }
 
   const onKeyDownHanlder = (e) => {
-    if (tool.handleKeyDown) {
+    if(e.key === "Escape") {
+      setTool("toolSelect");
+      return;
+    }
+
+    if(e.ctrlKey) {
+      return;
+    }
+
+    if (tool && tool.handleKeyDown) {
       tool.handleKeyDown(e);
     }
   }
 
   const setTool = (type) => {
-    
+    // Abort if tool is not done
+    if(tool && !tool.isDone()) {
+      if(tool.abort) {
+        tool.abort();
+      }
+    }
+
     if (type === "circle") {
       _setTool(new CircleTool(worldProps.current, setLabelText, onToolDone, updateEditor));
     } else if(type === "rect") {
@@ -90,7 +102,7 @@ function Editor (props) {
     } else if(type === "anchor") {
       _setTool(new AnchorTool(setLabelText, onToolDone));
     } else if(type === "rotConstraint") {
-      _setTool(new RotConstraintTool(setLabelText, onToolDone));
+      _setTool(new RotConstraintTool(worldProps.current, setLabelText, onToolDone));
     } else if(type === "force") {
       _setTool(new VectorTool(setLabelText, onToolDone, updateEditor, "force"));
     } else if(type === "velocity") {
@@ -111,6 +123,7 @@ function Editor (props) {
     // Layer - is an actual 2d canvas element, so you can have several layers inside the stage
     // Rect and Circle are not DOM elements. They are 2d shapes on canvas
     <div onKeyDown={onKeyDownHanlder} tabIndex="0" ref={mainDiv}>
+      <ToolSelector setTool={setTool} />
       { popUp ? popUp : <></> }
       <div className={Css.playBtnDiv}>
         <button className={Css.playBtn + " btn"} onClick={playSimulation}>
@@ -121,12 +134,12 @@ function Editor (props) {
       onMouseDown={onMouseDown}
       onMouseMove={onMouseMove}>
         <Layer>
-          <Text text={labelText} />
           {worldProps.current.getBodyList().map((body) => {
             return body.getKonvaComponent(onBodyClick, onAnchorClick)
           })}
         </Layer>
       </Stage>
+      <InstructionsBar labelText={labelText} />
     </div>
   );
 }

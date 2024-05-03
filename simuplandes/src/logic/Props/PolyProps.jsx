@@ -1,6 +1,8 @@
 import { Bodies, Vertices } from "matter-js";
 import { Line } from "react-konva";
 import {v4 as uuidv4} from "uuid";
+import { globalToRelativePos } from "../utils/CoordinateSysUtils";
+import { addVectors, rotateVector } from "../utils/VectorUtils";
 
 class PolyProps {
     constructor(origin) {
@@ -12,6 +14,7 @@ class PolyProps {
         this.isStatic = false;
         this.anchors = [];
         this.matterJsBody = null;
+        this.rotation = 0;
     }
 
     relativeMove(x, y) {
@@ -20,6 +23,24 @@ class PolyProps {
             const newY = vertex.y + y;
             this.vertices[i] = {x: newX, y: newY};
         });
+    }
+
+    setRotation(rot) {
+        // Define rotation
+        this.rotation = rot;
+        // Get centroid
+        const org = this.getCenter();
+        // Get vertices relative to centroid
+        const relVertices = this.getRelativeVertices();
+        const rotVertices = relVertices.map((pos) => {
+            // Rotate relative vertices
+            pos = rotateVector(pos, rot);
+            // Get absolute rotated vectors
+            return addVectors(pos, org);
+        });
+
+        // Set new vertices
+        this.vertices = rotVertices;
     }
 
     addAnchor(anchor) {
@@ -32,10 +53,6 @@ class PolyProps {
 
     getId() {
         return this.id;
-    }
-
-    getOrigin() {
-        return this.origin;
     }
 
     getType() {
@@ -67,6 +84,10 @@ class PolyProps {
     getCenter() {
         const vertices = Vertices.hull(this.vertices);
         return Vertices.centre(vertices);
+    }
+
+    getRotation() {
+        return this.rotation;
     }
 
     getRelativeVertices() {

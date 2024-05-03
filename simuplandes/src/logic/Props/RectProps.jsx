@@ -1,6 +1,7 @@
 import { Bodies } from "matter-js";
-import { Rect } from "react-konva";
+import { Line, Rect } from "react-konva";
 import { v4 as uuidv4 } from "uuid";
+import { relativeToGlobalPos } from "../utils/CoordinateSysUtils";
 
 class RectProps {
     constructor(origin, width, height, onClick) {
@@ -13,6 +14,7 @@ class RectProps {
         this.isStatic = false;
         this.anchors = [];
         this.matterJsBody = null;
+        this.rotation = 0;
     }
 
     relativeMove(x, y) {
@@ -30,10 +32,6 @@ class RectProps {
 
     getId() {
         return this.id;
-    }
-
-    getOrigin() {
-        return this.origin;
     }
 
     getWidth() {
@@ -54,14 +52,48 @@ class RectProps {
         return {x: x, y: y};
     }
 
+    getRelativeVertices() {
+        return [
+            {x: -this.width / 2, y:  this.height / 2},
+            {x: -this.width / 2, y: -this.height / 2},
+            {x:  this.width / 2, y: -this.height / 2},
+            {x:  this.width / 2, y:  this.height / 2},
+        ];
+    }
+
+    getAbsoluteVertices() {
+        const relVertices = this.getRelativeVertices();
+        const absVerts = relVertices.map((pos) => {
+            return relativeToGlobalPos(pos, this.getCenter(), this.rotation);
+        });
+
+        return absVerts;
+    }
+
+    getRotation() {
+        return this.rotation;
+    }
+
+    setRotation(rot) {
+        this.rotation = rot;
+    }
+
+    getKonvaPoints() {
+        const points = []
+        const absVertices = this.getAbsoluteVertices();
+        absVertices.forEach((vertex) => {
+            points.push(vertex.x);
+            points.push(vertex.y);
+        })
+        return points;
+    }
+
     getKonvaComponent(onBodyClick, onAnchorClick, onVectorClick, onTorqueClick) {
         return (
             <>
-                <Rect
-                    x={this.origin[0]}
-                    y={this.origin[1]}
-                    height={this.height}
-                    width={this.width}
+                <Line
+                    points={this.getKonvaPoints()}
+                    closed
                     fill={this.color}
                     stroke={this.stroke}
                     onClick={() => {onBodyClick(this);}}
@@ -74,6 +106,27 @@ class RectProps {
             </>
         )
     }
+    // getKonvaComponent(onBodyClick, onAnchorClick, onVectorClick, onTorqueClick) {
+    //     return (
+    //         <>
+    //             <Rect
+    //                 x={this.origin[0]}
+    //                 y={this.origin[1]}
+    //                 height={this.height}
+    //                 width={this.width}
+    //                 fill={this.color}
+    //                 stroke={this.stroke}
+    //                 onClick={() => {onBodyClick(this);}}
+    //                 rotation={this.rotation}
+    //             />
+    //             {
+    //                 this.anchors.map((anchor) => {
+    //                     return anchor.getKonvaComponent(onAnchorClick, onVectorClick, onTorqueClick);
+    //                 })
+    //             }
+    //         </>
+    //     )
+    // }
 
     resetMatterJsBody() {
         this.matterJsBody = null;

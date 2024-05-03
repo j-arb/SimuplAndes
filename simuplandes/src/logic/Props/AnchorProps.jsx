@@ -1,5 +1,6 @@
 import { Circle, Line } from "react-konva";
 import { v4 as uuidv4 } from "uuid";
+import { globalToRelativePos, relativeToGlobalPos } from "../utils/CoordinateSysUtils";
 
 class AnchorProps {
     constructor() {
@@ -17,10 +18,11 @@ class AnchorProps {
         this.body = body;
     }
 
-
     setPosition(x, y) {
-        this.position.x = x - this.body.getCenter().x;
-        this.position.y = y - this.body.getCenter().y;
+        const bodyCentroid = this.body.getCenter();
+        const bodyRotation = this.body.getRotation();
+        const relPos = globalToRelativePos({x,y}, bodyCentroid, bodyRotation);
+        this.position = relPos;
     }
 
     addForce(force) {
@@ -35,6 +37,39 @@ class AnchorProps {
         this.torques.push(torque);
     }
 
+    removeForce(force) {
+        const forces2 = this.forces.filter((element) => {
+            if(element.id === force.id) {
+                return false
+            }
+            return true;
+        });
+
+        this.forces = forces2;
+    }
+
+    removeVelocity(velocity) {
+        const vels2 = this.velocities.filter((element) => {
+            if(element.id === velocity.id) {
+                return false
+            }
+            return true;
+        });
+
+        this.velocities = vels2;
+    }
+
+    removeTorque(torque) {
+        const torques2 = this.torques.filter((element) => {
+            if(element.id === torque.id) {
+                return false
+            }
+            return true;
+        });
+
+        this.torques = torques2;
+    }
+
     // ======== GETTERS ========
 
     getBody() {
@@ -46,9 +81,9 @@ class AnchorProps {
     }
 
     getAbsolutePosition() {
-        const x = this.position.x + this.body.getCenter().x;
-        const y = this.position.y + this.body.getCenter().y;
-        return {x: x, y: y};
+        const bodyCentroid = this.body.getCenter();
+        const bodyRotation = this.body.getRotation();
+        return relativeToGlobalPos(this.position, bodyCentroid, bodyRotation);
     }
 
     getKonvaComponent(onAnchorClick, onVectorClick, onTorqueClick) {
