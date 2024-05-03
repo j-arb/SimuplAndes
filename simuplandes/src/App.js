@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import Editor from './components/editor/Editor';
 import './App.css';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';

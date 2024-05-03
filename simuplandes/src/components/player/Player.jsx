@@ -39,7 +39,7 @@ export default function Player (props) {
 
     worldBodies.forEach((body) => {
       body.resetMatterJsBody();
-      const matterJsBody = body.getMatterJsBody();
+      // const matterJsBody = body.getMatterJsBody();
       // const group = (worldBodies.length <= 32) ? 0 : -1;
       // const category = (worldBodies.length <= 32) ? Math.pow(2, body.id) : 1;
       // matterJsBody.collisionFilter.group = group;

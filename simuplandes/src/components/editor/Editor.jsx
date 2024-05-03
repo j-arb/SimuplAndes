@@ -8,7 +8,6 @@ import { useNavigate } from "react-router";
 import FixBodyTool from "../../logic/tools/FixBodyTool";
 import AnchorTool from "../../logic/tools/AnchorTool";
 import RotConstraintTool from "../../logic/tools/RotConstraintTool";
-import WorldProps from "../../logic/Props/WorldProps";
 import ToolSelectorTool from "../../logic/tools/ToolSelectorTool";
 import { useReducer } from "react";
 import TorqueTool from "../../logic/tools/TorqueTool";
