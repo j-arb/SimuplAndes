@@ -7,7 +7,7 @@ export default class RotConstraintProps {
         this.anchorA = null;
         this.anchorB = null;
         this.length = 0;
-        this.stiffness = 1;
+        this.stiffness = 0.5;
     }
 
     getId() {
@@ -41,7 +41,6 @@ export default class RotConstraintProps {
             render: {
                 anchors: false
             }
-            
         });
     }
 }

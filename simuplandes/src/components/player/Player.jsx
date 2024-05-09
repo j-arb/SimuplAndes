@@ -37,14 +37,15 @@ export default function Player (props) {
       alert("There are more than 32 bodies. Collisions will not be detected");
     }
 
-    worldBodies.forEach((body) => {
+    worldBodies.forEach((body, i) => {
       body.resetMatterJsBody();
-      // const matterJsBody = body.getMatterJsBody();
-      // const group = (worldBodies.length <= 32) ? 0 : -1;
-      // const category = (worldBodies.length <= 32) ? Math.pow(2, body.id) : 1;
-      // matterJsBody.collisionFilter.group = group;
-      // matterJsBody.collisionFilter.category = category;
-      Composite.add(engine.current.world, body.getMatterJsBody());
+      const matterJsBody = body.getMatterJsBody();
+      const group = (worldBodies.length <= 32) ? 0 : -1;
+      const category = (worldBodies.length <= 32) ? Math.pow(2, i) : 1;
+      matterJsBody.collisionFilter.group = group;
+      matterJsBody.collisionFilter.category = category;
+      console.log(matterJsBody);
+      Composite.add(engine.current.world, matterJsBody);
     });
     
     worldConstraints.forEach((constraint) => {
@@ -54,6 +55,8 @@ export default function Player (props) {
       bodyA.collisionFilter.mask = (bodyA.collisionFilter.mask & (~bodyB.collisionFilter.category)) >>> 0;
       bodyB.collisionFilter.mask = (bodyB.collisionFilter.mask & (~bodyA.collisionFilter.category)) >>> 0;
       Composite.add(engine.current.world, matterJsConstraint);
+      console.log(bodyA);
+      console.log(bodyB);
     });
 
     Runner.run(runner.current, engine.current)
