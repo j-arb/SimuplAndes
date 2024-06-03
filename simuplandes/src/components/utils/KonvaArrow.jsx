@@ -1,5 +1,5 @@
 import { Line } from "react-konva";
-import { addVectors, multiplyVector, rotateVector, substractVectors, unitVector, vectorMagnitude } from "../../logic/utils/VectorUtils";
+import { addVectors, multiplyVector, rotateVector, unitVector } from "constraint-solver-js";
 
 /**
  * 

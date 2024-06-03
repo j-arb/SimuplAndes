@@ -1,6 +1,6 @@
 import { Circle, Line } from "react-konva";
 import { v4 as uuidv4 } from "uuid";
-import { globalToRelativePos, relativeToGlobalPos } from "../utils/CoordinateSysUtils";
+import { globalToRelativePos, relativeToGlobalPos } from "constraint-solver-js";
 
 class AnchorProps {
     constructor() {

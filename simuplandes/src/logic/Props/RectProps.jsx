@@ -1,7 +1,7 @@
 import { Bodies } from "matter-js";
 import { Line, Rect } from "react-konva";
 import { v4 as uuidv4 } from "uuid";
-import { relativeToGlobalPos } from "../utils/CoordinateSysUtils";
+import { relativeToGlobalPos } from "constraint-solver-js";
 
 class RectProps {
     constructor(origin, width, height, onClick) {

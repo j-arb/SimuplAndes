@@ -1,8 +1,7 @@
 import { Bodies, Vertices } from "matter-js";
 import { Line } from "react-konva";
 import {v4 as uuidv4} from "uuid";
-import { globalToRelativePos } from "../utils/CoordinateSysUtils";
-import { addVectors, rotateVector } from "../utils/VectorUtils";
+import { addVectors, rotateVector } from "constraint-solver-js";
 
 class PolyProps {
     constructor(origin) {

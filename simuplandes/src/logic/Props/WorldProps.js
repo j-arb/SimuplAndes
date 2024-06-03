@@ -10,6 +10,11 @@ export default class WorldProps {
     bodies = [];
 
     /**
+     * @type {Object.<string, (CircleProps | PolyProps | RectProps)>}
+     */
+    bodiesDict = {};
+
+    /**
      * @type {Object.<string, RotConstraintProps>}
      */
     rotConstraints = {};
@@ -20,10 +25,12 @@ export default class WorldProps {
     prisConstraints = {};
 
     addBody(body) {
+        this.bodiesDict[body.id] = body;
         this.bodies.push(body);
     }
 
     removeBody(body) {
+        delete this.bodiesDict[body.id];
         const bodies2 = this.bodies.filter((element) => {
             if(element.id === body.id) {
                 return false
@@ -36,6 +43,10 @@ export default class WorldProps {
 
     getBodyList() {
         return this.bodies;
+    }
+
+    getBodyDict() {
+        return this.bodiesDict;
     }
 
     addRotConstraint(constraint) {

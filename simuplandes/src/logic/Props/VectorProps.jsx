@@ -2,8 +2,8 @@ import { Line } from "react-konva";
 import { v4 as uuidv4 } from "uuid";
 import KonvaArrow from "../../components/utils/KonvaArrow";
 import AnchorProps from "./AnchorProps";
-import { addVectors, rotateVector, substractVectors } from "../utils/VectorUtils";
-import { globalToRelativePos } from "../utils/CoordinateSysUtils";
+import { addVectors, substractVectors, rotateVector } from "constraint-solver-js";
+import { globalToRelativePos } from "constraint-solver-js";
 
 export default class VectorProps {
     // TODO take into account body rotations.

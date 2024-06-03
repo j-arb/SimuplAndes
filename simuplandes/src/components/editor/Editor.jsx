@@ -16,6 +16,8 @@ import InstructionsBar from "./instructions_bar/InstructionsBar";
 import Css from "./Editor.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlay } from "@fortawesome/free-solid-svg-icons";
+import AnchorPropsEditor from "../props_editors/anchor_props_editor/AnchorPropsEditor";
+import { solveConstraints } from "../../logic/utils/ConstraintUtils";
 
 function Editor (props) {
 
@@ -27,6 +29,7 @@ function Editor (props) {
   const [tool, _setTool] = useState();
   const [popUp, setPopUp] = useState(null);
   const [, updateEditor] = useReducer(x => x + 1, 0);
+  const [propsEditor, setPropsEditor] = useState(<AnchorPropsEditor />);
   const navigate = useNavigate();
   /**
    * @type {React.MutableRefObject<HTMLDivElement | null>}
@@ -64,7 +67,15 @@ function Editor (props) {
     }
   }
 
-  const onToolDone = () => {
+  /**
+   * Callback function when tool is done
+   * @param {boolean} updateConstraints 
+   */
+  const onToolDone = (updateConstraints) => {
+    if(updateConstraints) {
+      solveConstraints(worldProps.current);
+    }
+
     setTool("toolSelect");
   }
 
@@ -124,6 +135,9 @@ function Editor (props) {
     // Rect and Circle are not DOM elements. They are 2d shapes on canvas
     <div onKeyDown={onKeyDownHanlder} tabIndex="0" ref={mainDiv}>
       <ToolSelector setTool={setTool} />
+      <div className="propsEditorWrapper">
+        { propsEditor ? propsEditor : <></> }
+      </div>
       { popUp ? popUp : <></> }
       <div className={Css.playBtnDiv}>
         <button className={Css.playBtn + " btn"} onClick={playSimulation}>

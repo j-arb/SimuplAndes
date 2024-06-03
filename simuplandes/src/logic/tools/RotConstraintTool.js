@@ -30,14 +30,9 @@ export default class RotConstraintTool {
             this.setLabelText(this.getLabelText());
         } else if(this.state === "anchorADefined") {
             this.state = "done";
-            const offsetX = this.constraint.anchorA.getAbsolutePosition().x -
-            anchor.getAbsolutePosition().x;
-            const offsetY = this.constraint.anchorA.getAbsolutePosition().y - 
-            anchor.getAbsolutePosition().y;
-            anchor.body.relativeMove(offsetX, offsetY);
             this.constraint.setAnchorB(anchor);
             this.worldProps.addRotConstraint(this.constraint);
-            this.onToolDone();
+            this.onToolDone(true);
         }
     }
 
