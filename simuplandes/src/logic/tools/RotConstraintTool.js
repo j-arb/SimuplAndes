@@ -1,5 +1,6 @@
 import AnchorProps from "../Props/AnchorProps";
 import RotConstraintProps from "../Props/RotConstraintProps";
+import { solveConstraints } from "../utils/ConstraintUtils";
 
 export default class RotConstraintTool {
     constructor(worldProps, setLabelText, onToolDone) {
@@ -32,7 +33,13 @@ export default class RotConstraintTool {
             this.state = "done";
             this.constraint.setAnchorB(anchor);
             this.worldProps.addRotConstraint(this.constraint);
-            this.onToolDone(true);
+            try {
+                solveConstraints(this.worldProps);
+            } catch (err) {
+                alert(err.message)
+                this.worldProps.removeRotConstraint(this.constraint);
+            }
+            this.onToolDone();
         }
     }
 
