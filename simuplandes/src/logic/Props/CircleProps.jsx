@@ -13,6 +13,7 @@ class CircleProps {
         this.anchors = [];
         this.matterJsBody = null;
         this.rotation = 0;
+        this.mass = 10;
     }
 
     addAnchor(anchor) {
@@ -21,6 +22,14 @@ class CircleProps {
 
     getAnchors() {
         return this.anchors;
+    }
+
+    getMass() {
+        return this.mass;
+    }
+
+    setMass (mass) {
+        this.mass = mass;
     }
 
     getId() {
@@ -84,13 +93,14 @@ class CircleProps {
                 this.center[1],
                 this.radius,
                 {
-                    mass: 10,
+                    mass: this.mass,
                     restitution: 0.9,
                     friction: 0.005,
                     render: {
                         fillStyle: this.color
                     },
-                    isStatic: this.isStatic
+                    isStatic: this.isStatic,
+                    angle: this.rotation
             });
         }
 

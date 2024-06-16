@@ -25,6 +25,10 @@ class AnchorProps {
         this.position = relPos;
     }
 
+    setRelativePosition(x, y) {
+        this.position = {x: x, y: y};
+    }
+
     addForce(force) {
         this.forces.push(force);
     }
@@ -99,10 +103,10 @@ class AnchorProps {
                     onClick={() => {onAnchorClick(this)}}
                 />
                 {this.forces.map((force) => {
-                    return force.getKonvaComponent();
+                    return force.getKonvaComponent(onVectorClick);
                 })}
                 {this.velocities.map((velocity) => {
-                    return velocity.getKonvaComponent();
+                    return velocity.getKonvaComponent(onVectorClick);
                 })}
             </>
         );

@@ -14,6 +14,7 @@ class PolyProps {
         this.anchors = [];
         this.matterJsBody = null;
         this.rotation = 0;
+        this.mass = 10;
     }
 
     relativeMove(x, y) {
@@ -40,6 +41,14 @@ class PolyProps {
 
         // Set new vertices
         this.vertices = rotVertices;
+    }
+
+    setMass(mass) {
+        this.mass = mass;
+    }
+
+    getMass() {
+        return this.mass;
     }
 
     addAnchor(anchor) {
@@ -113,14 +122,15 @@ class PolyProps {
                 cm.x, cm.y,
                 vertices,
                 {
-                    mass: 10,
+                    mass: this.mass,
                     restitution: 0.9,
                     friction: 0.005,
                     render: {
                         fillStyle: this.color,
                         strokeStyle: "1px solid " + this.stroke
                     },
-                    isStatic: this.isStatic
+                    isStatic: this.isStatic,
+                    angle: this.rotation
                 }      
             );
         }

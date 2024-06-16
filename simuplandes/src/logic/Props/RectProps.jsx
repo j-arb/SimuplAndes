@@ -15,6 +15,7 @@ class RectProps {
         this.anchors = [];
         this.matterJsBody = null;
         this.rotation = 0;
+        this.mass = 10;
     }
 
     relativeMove(x, y) {
@@ -28,6 +29,14 @@ class RectProps {
     
     getAnchors() {
         return this.anchors;
+    }
+
+    getMass() {
+        return this.mass;
+    }
+
+    setMass(mass) {
+        this.mass = mass;
     }
 
     getId() {
@@ -140,14 +149,15 @@ class RectProps {
                 this.width,
                 this.height,
                 {
-                    mass: 10,
+                    mass: this.mass,
                     restitution: 0.9,
                     friction: 0.005,
                     render: {
                         fillStyle: this.color,
                         strokeStyle: "1px solid" + this.stroke
                     },
-                    isStatic: this.isStatic
+                    isStatic: this.isStatic,
+                    angle: this.rotation
                 }      
             );
         }

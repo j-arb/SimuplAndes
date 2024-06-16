@@ -18,6 +18,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlay } from "@fortawesome/free-solid-svg-icons";
 import AnchorPropsEditor from "../props_editors/anchor_props_editor/AnchorPropsEditor";
 import { solveConstraints } from "../../logic/utils/ConstraintUtils";
+import PropsEditor from "../props_editor/PropsEditor";
 
 function Editor (props) {
 
@@ -28,8 +29,8 @@ function Editor (props) {
   const [labelText, setLabelText] = useState("");
   const [tool, _setTool] = useState();
   const [popUp, setPopUp] = useState(null);
-  const [, updateEditor] = useReducer(x => x + 1, 0);
-  const [propsEditor, setPropsEditor] = useState(<AnchorPropsEditor />);
+  const [, _updateEditor] = useReducer(x => x + 1, 0);
+  const [propsEditor, setPropsEditor] = useState(null);
   const navigate = useNavigate();
   /**
    * @type {React.MutableRefObject<HTMLDivElement | null>}
@@ -67,15 +68,18 @@ function Editor (props) {
     }
   }
 
+  const onVectorClick = (vector) => {
+    console.log(vector);
+    if(tool && tool.handleVectorClick) {
+      tool.handleVectorClick(vector);
+    }
+  }
+
   /**
    * Callback function when tool is done
    * @param {boolean} updateConstraints 
    */
   const onToolDone = (updateConstraints) => {
-    if(updateConstraints) {
-      solveConstraints(worldProps.current);
-    }
-
     setTool("toolSelect");
   }
 
@@ -92,6 +96,14 @@ function Editor (props) {
     if (tool && tool.handleKeyDown) {
       tool.handleKeyDown(e);
     }
+  }
+
+  const updateEditor = (updateConstraints) => {
+    if(updateConstraints) {
+      solveConstraints(worldProps.current);
+    }
+
+    _updateEditor();
   }
 
   const setTool = (type) => {
@@ -121,7 +133,7 @@ function Editor (props) {
     } else if(type === "torque") {
       _setTool(new TorqueTool(setLabelText, onToolDone));
     } else if(type === "toolSelect") {
-      _setTool(new ToolSelectorTool(setTool, setLabelText));
+      _setTool(new ToolSelectorTool(setTool, setLabelText, setPopUp, updateEditor));
     }
   }
 
@@ -149,7 +161,7 @@ function Editor (props) {
       onMouseMove={onMouseMove}>
         <Layer>
           {worldProps.current.getBodyList().map((body) => {
-            return body.getKonvaComponent(onBodyClick, onAnchorClick)
+            return body.getKonvaComponent(onBodyClick, onAnchorClick, onVectorClick)
           })}
         </Layer>
       </Stage>

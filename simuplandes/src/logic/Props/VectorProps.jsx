@@ -4,6 +4,8 @@ import KonvaArrow from "../../components/utils/KonvaArrow";
 import AnchorProps from "./AnchorProps";
 import { addVectors, substractVectors, rotateVector } from "constraint-solver-js";
 import { globalToRelativePos } from "constraint-solver-js";
+import { vectorDirection } from "constraint-solver-js";
+import { magAndDir2Vector } from "constraint-solver-js";
 
 export default class VectorProps {
     // TODO take into account body rotations.
@@ -16,6 +18,7 @@ export default class VectorProps {
         this.vector = {x: null, y: null};
         this.fixedDirection = true;
         this.color = "black";
+        this.type = null;
     }
 
     // ======== Getters =========
@@ -30,6 +33,10 @@ export default class VectorProps {
 
     getMagnitude() {
         return Math.sqrt( Math.pow(this.vector.x, 2) + Math.pow(this.vector.y, 2) );
+    }
+
+    getDirection() {
+        return vectorDirection(this.vector);
     }
 
     getRelativeVector() {
@@ -49,7 +56,7 @@ export default class VectorProps {
         }
     }
 
-    getKonvaComponent() {
+    getKonvaComponent(onVectorClick) {
         const absOrigin = this.getAbsoluteOrigin();
         const absVecEnd = this.getAbsoluteVectorEnd();
         return (
@@ -57,6 +64,9 @@ export default class VectorProps {
                 start={absOrigin}
                 end={absVecEnd}
                 color={this.color}
+                onClick={e => {
+                    onVectorClick(this);
+                }}
             />
         )
     }
@@ -81,5 +91,17 @@ export default class VectorProps {
 
     setFixedDirection() {
         this.fixedDirection = true;
+    }
+
+    setDirection(dir) {
+        const magnitude = this.getMagnitude();
+        const vec = magAndDir2Vector(magnitude, dir);
+        this.vector = vec;
+    }
+
+    setMagnitude(mag) {
+        const dir = this.getDirection();
+        const vec = magAndDir2Vector(mag, dir);
+        this.vector = vec;
     }
 }

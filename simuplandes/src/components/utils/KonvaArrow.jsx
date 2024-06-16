@@ -27,14 +27,20 @@ function KonvaArrow(props) {
             <Line
                 points={[props.start.x, props.start.y, props.end.x, props.end.y]}
                 stroke={props.color ? props.color : "black"}
+                strokeWidth={5}
+                onClick={props.onClick}
             />
             <Line
                 points={[tipStart.x, tipStart.y, tip1End.x, tip1End.y]}
                 stroke={props.color ? props.color : "black"}
+                strokeWidth={5}
+                onClick={props.onClick}
             />
             <Line
                 points={[tipStart.x, tipStart.y, tip2End.x, tip2End.y]}
                 stroke={props.color ? props.color : "black"}
+                strokeWidth={5}
+                onClick={props.onClick}
             />
         </>
     )

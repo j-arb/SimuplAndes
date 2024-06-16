@@ -1,3 +1,4 @@
+import AnchorProps from "./AnchorProps";
 import CircleProps from "./CircleProps";
 import PolyProps from "./PolyProps";
 import RectProps from "./RectProps";
@@ -47,6 +48,23 @@ export default class WorldProps {
 
     getBodyDict() {
         return this.bodiesDict;
+    }
+
+    /**
+     * @returns {AnchorProps[]}
+     */
+    getAnchorsWithForces() {
+        const anchors = [];
+        this.bodies.forEach((body) => {
+            const bodyAnchors = body.getAnchors();
+            for(const anchor of bodyAnchors) {
+                if(anchor.forces.length > 0) {
+                    anchors.push(anchor);
+                }
+            }
+        });
+
+        return anchors;
     }
 
     addRotConstraint(constraint) {

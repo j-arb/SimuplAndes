@@ -14,8 +14,10 @@ export default class VectorTool {
         this.vectorp = new VectorProps();
         if(type === "force") {
             this.vectorp.color = "black";
+            this.vectorp.type = "force";
         } else if(type === "velocity") {
             this.vectorp.color = "blue";
+            this.vectorp.type = "velocity";
         }
         this.setLabelText("Seleccione el anclaje")
         this.state = "initial";

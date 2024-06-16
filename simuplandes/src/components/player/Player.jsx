@@ -1,16 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
-import { Engine, Render, Bodies, Runner, Composite } from 'matter-js'
+import { Engine, Render, Bodies, Runner, Composite, Events, Body } from 'matter-js'
 import { useNavigate } from 'react-router';
 import Css from "./Player.module.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPause, faPlay, faStop } from '@fortawesome/free-solid-svg-icons';
+import { addVectors, relativeToGlobalPos, rotateVector, substractVectors, vectorMagnitude } from 'constraint-solver-js';
 
 export default function Player (props) {
   const scene = useRef();
   const navigate = useNavigate();
   const engine = useRef(Engine.create());
   const runner = useRef(Runner.create());
-  const [ppIcon, setPpIcon] = useState(faPause);
+  const [ppIcon, setPpIcon] = useState(faPlay);
   
   useEffect(() => {
     const cw = document.body.clientWidth;
@@ -18,6 +19,7 @@ export default function Player (props) {
 
     const worldBodies = props.worldProps.current.getBodyList();
     const worldConstraints = props.worldProps.current.getRotConstraintList();
+    const anchorsWithForces = props.worldProps.current.getAnchorsWithForces();
 
     scene.current.focus();
 
@@ -59,8 +61,30 @@ export default function Player (props) {
       console.log(bodyB);
     });
 
-    Runner.run(runner.current, engine.current)
-    Render.run(render)
+    // Register forces
+    Events.on(runner.current, "beforeUpdate", (evt) => {
+      anchorsWithForces.forEach((anchor) => {
+        const body = anchor.getBody();
+        const mJsBody = body.getMatterJsBody();
+        const bodyPos = mJsBody.position;
+        const bodyRot = mJsBody.angle;
+        anchor.forces.forEach((force) => {
+          const relOrigin = anchor.getRelativePosition();
+          const absOrigin = relativeToGlobalPos(relOrigin, bodyPos, bodyRot); //addVectors(bodyPos, relOrigin);
+          let fVector = force.getRelativeVector();
+          if(!force.fixedDirection) {
+            const relEnd = addVectors(fVector, relOrigin);
+            const absEnd = relativeToGlobalPos(relEnd, bodyPos, bodyRot);
+            fVector = substractVectors(absEnd, absOrigin);
+          }
+          Body.applyForce(mJsBody, absOrigin, fVector);
+        });
+      });
+    });
+
+    Runner.run(runner.current, engine.current);
+    Render.run(render);
+    runner.current.enabled = false;
 
     return () => {
       Render.stop(render)
@@ -83,8 +107,17 @@ export default function Player (props) {
     }
   }
 
+  const onKeyDown = (e) => {
+    if(e.code === "ArrowLeft" || e.code === "ArrowRight") {
+      if(!runner.current.enabled) {
+        // Runner.tick(runner.current, engine.current, Date.now());
+        Engine.update(engine.current, 1);
+      }
+    }
+  }
+
   return (
-    <div>
+    <div onKeyDown={onKeyDown}>
       <div className={Css.btnsDiv}>
         <button className={Css.stopBtn + " btn"} onClick={() => navigate("/editor")}>
           <FontAwesomeIcon icon={faStop} className={Css.stopBtnIcon} />

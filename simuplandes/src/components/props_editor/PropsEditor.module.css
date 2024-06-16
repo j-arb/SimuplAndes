@@ -1,0 +1,32 @@
+.mainDiv {
+    position: fixed;
+    top: 50px;
+    right: 10px;
+    background-color: #F0F0F0;
+    z-index: 1;
+    width: 200px;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.input {
+    width: 100%;
+}
+
+.label {
+    font-size: 13px;
+}
+
+.submit {
+    width: 100%;
+    margin-top: 10px;
+    background-color: green;
+    color: white;
+    border-radius: 10px;
+}
+
+.valLabel {
+    color: red;
+    font-size: 10px;
+    margin-bottom: 0px;
+}

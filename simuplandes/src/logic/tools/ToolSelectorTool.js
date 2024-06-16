@@ -1,9 +1,12 @@
+import PropsEditor from "../../components/props_editor/PropsEditor";
 import CircleTool from "./CircleTool";
 
 export default class ToolSelectorTool {
-    constructor(setTool, setLabelText) {
+    constructor(setTool, setLabelText, setPopUp, updateEditor) {
         this.setTool = setTool;
         setLabelText("");
+        this.setPopUp = setPopUp;
+        this.updateEditor = updateEditor;
     }
 
     handleKeyDown(e) {
@@ -30,5 +33,45 @@ export default class ToolSelectorTool {
 
     isDone() {
         return true;
+    }
+
+    handleVectorClick(vector) {
+        if(vector.type === "force") {
+            this.setPopUp(
+                <PropsEditor
+                    type="force"
+                    props={vector}
+                    updateEditor={this.updateEditor}
+                />
+            );
+        } else {
+            this.setPopUp(
+                <PropsEditor
+                    type="velocity"
+                    props={vector}
+                    updateEditor={this.updateEditor} 
+                />
+            );
+        }
+    }
+
+    handleBodyClick(body) {
+        this.setPopUp(
+            <PropsEditor
+                type="body"
+                props={body}
+                updateEditor={this.updateEditor}
+            />
+        )
+    }
+
+    handleAnchorClick(anchor) {
+        this.setPopUp(
+            <PropsEditor
+                type="anchor"
+                props={anchor}
+                updateEditor={this.updateEditor}
+            />
+        )
     }
 }
