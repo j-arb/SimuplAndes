@@ -81,7 +81,6 @@ export default function Player (props) {
         });
       });
     });
-
     Runner.run(runner.current, engine.current);
     Render.run(render);
     runner.current.enabled = false;

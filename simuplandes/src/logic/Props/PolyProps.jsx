@@ -130,7 +130,8 @@ class PolyProps {
                         strokeStyle: "1px solid " + this.stroke
                     },
                     isStatic: this.isStatic,
-                    angle: this.rotation
+                    angle: this.rotation,
+                    frictionAir: 0
                 }      
             );
         }

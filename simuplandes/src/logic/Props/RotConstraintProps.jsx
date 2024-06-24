@@ -1,3 +1,4 @@
+import { substractVectors } from "constraint-solver-js";
 import { Constraint } from "matter-js";
 import { v4 as uuidv4 } from "uuid";
 
@@ -31,11 +32,15 @@ export default class RotConstraintProps {
     }
 
     getMatterJsConstraint() {
+        const bodyAPos = this.anchorA.body.getCenter();
+        const anchorAPos = substractVectors(this.anchorA.getAbsolutePosition(), bodyAPos);
+        const bodyBPos = this.anchorB.body.getCenter();
+        const anchorBPos = substractVectors(this.anchorB.getAbsolutePosition(), bodyBPos);
         return Constraint.create({
             bodyA: this.anchorA.body.getMatterJsBody(),
             bodyB: this.anchorB.body.getMatterJsBody(),
-            pointA: {...this.anchorA.position},
-            pointB: {...this.anchorB.position},
+            pointA: anchorAPos,
+            pointB: anchorBPos,
             length: this.length,
             stiffness: this.stiffness,
             render: {

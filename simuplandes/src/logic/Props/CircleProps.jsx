@@ -100,7 +100,8 @@ class CircleProps {
                         fillStyle: this.color
                     },
                     isStatic: this.isStatic,
-                    angle: this.rotation
+                    angle: this.rotation,
+                    frictionAir: 0
             });
         }
 

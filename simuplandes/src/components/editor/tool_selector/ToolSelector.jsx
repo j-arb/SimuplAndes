@@ -54,9 +54,9 @@ export default function ToolSelector(props) {
                     </div>
                 </div>
                 <div className={Css.groupRow}>
-                    <div title="Añadir restricción prismática" onClick={() => alert("Coming soon!")}>    
+                    {/* <div title="Añadir restricción prismática" onClick={() => alert("Coming soon!")}>    
                         <img src={prism_icon} height="30" width="30"/>
-                    </div>
+                    </div> */}
                     <div title="Fijar cuerpo a tierra (F)" onClick={() => setTool("fix body")}>
                         <img src={ground_icon} height="30" width="30"/>
                     </div>
@@ -76,18 +76,18 @@ export default function ToolSelector(props) {
                     </div>
                 </div>
                 <div className={Css.groupRow}>
-                    <div title="Añadir velocidad (V)" onClick={() => setTool("velocity")}>    
+                    {/* <div title="Añadir velocidad (V)" onClick={() => setTool("velocity")}>    
                         <img src={speed_icon} height="30" width="30"/>
                     </div>
                     <div title="Añadir velocidad angular" onClick={() => alert("Coming soon!")}>
                         <img src={ang_speed_icon} height="30" width="30"/>
-                    </div>
+                    </div> */}
                 </div>
                 <div>
 
                 </div>
             </div>
-            <p className={Css.title}>Modificar</p>
+            {/* <p className={Css.title}>Modificar</p>
             <div className={Css.group}>
                 <div className={Css.groupRow}>
                     <div title="Editar" onClick={() => alert("Coming soon!")}>    
@@ -97,7 +97,7 @@ export default function ToolSelector(props) {
                         <img src={delete_icon} height="30" width="30"/>
                     </div>
                 </div>
-            </div>
+            </div> */}
         </div>
     )
 }
